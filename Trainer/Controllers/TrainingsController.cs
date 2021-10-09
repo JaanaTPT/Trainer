@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Trainer.Data;
 using Trainer.Models;
+using Trainer.Models.TrainingViewModels;
 
 namespace Trainer.Controllers
 {
@@ -20,13 +21,38 @@ namespace Trainer.Controllers
         }
 
         // GET: Trainings
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var trainings = _context.Trainings
+        //        .Include(c => c.Client)
+        //        .Include(c => c.TrainingExercises)
+        //            .ThenInclude(c => c.Exercise)
+        //        .AsNoTracking();
+        //    return View(await trainings.ToListAsync());
+        //}
+
+        public async Task<IActionResult> Index(int? id)
         {
-            var trainings = _context.Trainings
-                .Include(c => c.Client)
-                .AsNoTracking();
-            return View(await trainings.ToListAsync());
+            var viewModel = new TrainingDetailsData();
+            viewModel.Trainings = await _context.Trainings
+                  .Include(i => i.Client)
+                  .Include(i => i.TrainingExercises)
+                    .ThenInclude(i => i.Exercise)
+                  .AsNoTracking()
+                  .OrderBy(i => i.Date)
+                  .ToListAsync();
+
+            if (id != null)
+            {
+                ViewData["TrainingID"] = id.Value;
+                Training training = viewModel.Trainings.Where(
+                    i => i.TrainingID == id.Value).Single();
+                viewModel.Exercises = training.TrainingExercises.Select(s => s.Exercise);
+            }
+
+            return View(viewModel);
         }
+
 
         // GET: Trainings/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -50,7 +76,7 @@ namespace Trainer.Controllers
         // GET: Trainings/Create
         public IActionResult Create()
         {
-            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FirstName");
+            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FullName");
             return View();
         }
 
@@ -67,7 +93,7 @@ namespace Trainer.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FirstName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FullName", training.ClientID);
             return View(training);
         }
 

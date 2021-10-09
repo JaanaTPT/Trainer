@@ -1,0 +1,54 @@
+﻿@model Trainer.Models.TrainingExercise
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>TrainingExercise</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Rounds)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Rounds)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Repetitions)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Repetitions)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MaxWeight)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MaxWeight)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Comments)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Comments)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Training)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Training.TrainingID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Exercise)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Exercise.Title)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.TrainingExerciseID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

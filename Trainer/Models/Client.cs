@@ -40,5 +40,6 @@ namespace Trainer.Models
 
 
         public ICollection<Training> Trainings { get; set; }
+        public ICollection<TrainingExercise> TrainingExercises { get; set; }
     }
 }

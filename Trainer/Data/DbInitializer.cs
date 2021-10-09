@@ -21,7 +21,7 @@ namespace Trainer.Data
 
             var clients = new Client[]
             {
-            new Client{FirstName="Denise",LastName="Ellison",DateOfBirth=DateTime.Parse("2000-10-22"),Gender="F",StartWeight=67,CurrentWeight=65,Height=167,AdditionalInfo="Wants to lose waight and improve muscle tone."},
+            new Client{FirstName="Denise",LastName="Ellison",DateOfBirth=DateTime.Parse("2000-10-22"),Gender="F",StartWeight=67,CurrentWeight=65,Height=167,AdditionalInfo="Wants to lose weight and improve muscle tone."},
             new Client{FirstName="Timothy",LastName="Herring",DateOfBirth=DateTime.Parse("1992-01-05"),Gender="M",StartWeight=110,CurrentWeight=97,Height=185,AdditionalInfo="Purpose is to lose fat and be in better shape. Pain in knees."},
             new Client{FirstName="Josh",LastName="Goddard",DateOfBirth=DateTime.Parse("1986-12-10"),Gender="M",StartWeight=89,CurrentWeight=89,Height=189,AdditionalInfo="Wants to build muscle and lose belly fat."},
             new Client{FirstName="Eric",LastName="Whitley",DateOfBirth=DateTime.Parse("1995-06-18"),Gender="M",StartWeight=96,CurrentWeight=90,Height=179,AdditionalInfo="Trains for marathon, wants to improve muscle structure."},

@@ -57,8 +57,8 @@ namespace Trainer.Controllers
 
             var client = await _context.Clients
                 .Include(s => s.Trainings)
-                .ThenInclude(e => e.TrainingExercises)
-                .ThenInclude(e => e.Exercise)
+                //.Include(e => e.TrainingExercises)
+                //        .ThenInclude(e => e.Exercise)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
 

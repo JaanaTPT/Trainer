@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Trainer.Models.Training>
+﻿@model Trainer.Models.TrainingViewModels.TrainingDetailsData
 
 @{
     ViewData["Title"] = "Trainings";
@@ -13,29 +13,42 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Date)
+               Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Client)
+                Client
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model.Trainings)
+        {
+            string selectedRow = "";
+            if (item.TrainingID == (int?)ViewData["TrainingID"])
+            {
+                selectedRow = "table-success";
+            }
+        <tr class="@selectedRow">
             <td>
                 @Html.DisplayFor(modelItem => item.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Client.FullName)
             </td>
+            @*<td>
+                @foreach (var exercise in item.TrainingExercises)
+                {
+                    @exercise.Exercise.Title <br />
+                }
+            </td>*@
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.TrainingID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.TrainingID">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.TrainingID">Delete</a>
             </td>
         </tr>
-}
-    </tbody>
+            }
+        </tbody>
 </table>

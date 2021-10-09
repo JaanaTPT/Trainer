@@ -76,6 +76,30 @@
                 }
             </table>
         </dd>
+
+        @*<dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Trainings)
+        </dt>
+        <dd class="col-sm-10">
+            <table class="table">
+                <tr>
+                    <th>Column name</th>
+                </tr>
+                @foreach (var item in Model.Trainings)
+                {
+                    @foreach (var item1 in Model.TrainingExercises)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item1.Rounds)
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </table>
+        </dd>*@
+
     </dl>
 </div>
 <div>
