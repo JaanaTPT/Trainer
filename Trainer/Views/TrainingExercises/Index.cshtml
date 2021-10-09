@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<Trainer.Models.TrainingExercise>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Training exercises";
 }
 
-<h1>Index</h1>
+<h1>Training exercises</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,6 +12,15 @@
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Training.Client.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Training.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Exercise)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Rounds)
             </th>
@@ -24,18 +33,25 @@
             <th>
                 @Html.DisplayNameFor(model => model.Comments)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Training)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Exercise)
-            </th>
+            @*<th>
+            @Html.DisplayNameFor(model => model.Training)
+        </th>*@
+
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Training.Client.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Training.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Exercise.Title)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Rounds)
             </td>
@@ -48,12 +64,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Comments)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Training.TrainingID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Exercise.Title)
-            </td>
+            @*<td>
+            @Html.DisplayFor(modelItem => item.Training.TrainingID)
+        </td>*@
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.TrainingExerciseID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.TrainingExerciseID">Details</a> |

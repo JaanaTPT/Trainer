@@ -22,7 +22,7 @@ namespace Trainer.Controllers
         // GET: TrainingExercises
         public async Task<IActionResult> Index()
         {
-            var trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training);
+            var trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client);
             return View(await trainingContext.ToListAsync());
         }
 
@@ -37,6 +37,8 @@ namespace Trainer.Controllers
             var trainingExercise = await _context.TrainingExercises
                 .Include(t => t.Exercise)
                 .Include(t => t.Training)
+                    .ThenInclude(t => t.Client)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.TrainingExerciseID == id);
             if (trainingExercise == null)
             {
