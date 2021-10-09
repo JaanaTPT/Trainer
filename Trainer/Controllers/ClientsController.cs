@@ -20,9 +20,31 @@ namespace Trainer.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            return View(await _context.Clients.ToListAsync());
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "lastName_desc" : "";
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
+            ViewData["CurrentFilter"] = searchString;
+            var clients = from s in _context.Clients
+                           select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                clients = clients.Where(s => s.LastName.Contains(searchString)
+                                       || s.FirstName.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "lastName_desc":
+                    clients = clients.OrderByDescending(s => s.LastName);
+                    break;
+                case "firstName_desc":
+                    clients = clients.OrderByDescending(s => s.FirstName);
+                    break;
+                default:
+                    clients = clients.OrderBy(s => s.FirstName);
+                    break;
+            }
+            return View(await clients.AsNoTracking().ToListAsync());
         }
 
         // GET: Clients/Details/5
