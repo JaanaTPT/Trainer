@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Trainer.Models
 {
@@ -12,6 +13,7 @@ namespace Trainer.Models
         public int ExerciseID { get; set; }
         public int Rounds { get; set; }
         public int Repetitions { get; set; }
+        [Display(Name = "Maximum weight")]
         public int MaxWeight { get; set; }
         public String Comments { get; set; }
 
