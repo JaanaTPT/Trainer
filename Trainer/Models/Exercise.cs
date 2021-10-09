@@ -17,6 +17,7 @@ namespace Trainer.Models
         [Required]
         [Display(Name = "Exercise name")]
         public string Title { get; set; }
+        [Display(Name = "Muscle group")]
         public MuscleGroup? MuscleGroup { get; set; }
 
         public ICollection<TrainingExercise> TrainingExercises { get; set; }
