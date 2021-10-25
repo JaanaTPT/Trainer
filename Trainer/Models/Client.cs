@@ -6,13 +6,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Trainer.Models
 {
-    public class Client
+    public class Client : Entity
     {
-        public int ID { get; set; }
+        private string _firstName;
         [Required]
         [StringLength(50)]
         [Display(Name = "First name")]
-        public string FirstName { get; set; }
+        public string FirstName 
+        {
+            get { return _firstName; }
+            set { _firstName = value; } 
+        }
         [Required]
         [StringLength(50)]
         [Display(Name = "Last name")]

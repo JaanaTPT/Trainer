@@ -5,6 +5,10 @@ namespace Trainer.Data
 {
     public class TrainingContext : DbContext
     {
+        public TrainingContext()
+        {
+        }
+
         public TrainingContext(DbContextOptions<TrainingContext> options) : base(options)
         {
         }

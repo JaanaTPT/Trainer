@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Trainer.Core.IConfiguration;
+using Trainer.Core.Repository;
 using Trainer.Data;
 using Trainer.Models;
 
@@ -12,6 +14,19 @@ namespace Trainer.Controllers
 {
     public class ClientsController : Controller
     {
+
+        private IUnitOfWork _uow;
+
+        public ClientsController(IUnitOfWork uow)
+        {
+            _uow = uow;
+        }
+
+        //public async Task<object> Index(int page)
+        //{
+        //    return await _uow.Clients.List(page, 10);
+        //}
+
         private readonly TrainingContext _context;
 
         public ClientsController(TrainingContext context)
@@ -20,8 +35,9 @@ namespace Trainer.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int page)
         {
+
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "lastName_desc" : "";
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
             ViewData["CurrentFilter"] = searchString;
