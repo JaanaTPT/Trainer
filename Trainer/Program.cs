@@ -17,12 +17,12 @@ namespace Trainer
     {
         public static void Main(string[] args)
         {
-            var dbContext = new TrainingContext();
-            var clientRepository = new ClientRepository(dbContext);
-            var fakeClientRepository = new FakeClientRepository();
-            var uow = new UnitOfWork(dbContext, clientRepository);
+            //var dbContext = new TrainingContext();
+            //var clientRepository = new ClientRepository(dbContext);
+            //var fakeClientRepository = new FakeClientRepository();
+            //var uow = new UnitOfWork(dbContext, clientRepository);
 
-            var controller = new ClientsController(uow);
+            //var controller = new ClientsController(uow);
 
             var host = CreateHostBuilder(args).Build();
 

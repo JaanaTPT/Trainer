@@ -15,12 +15,12 @@ namespace Trainer.Controllers
     public class ClientsController : Controller
     {
 
-        private IUnitOfWork _uow;
+        //private IUnitOfWork _uow;
 
-        public ClientsController(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
+        //public ClientsController(IUnitOfWork uow)
+        //{
+        //    _uow = uow;
+        //}
 
         //public async Task<object> Index(int page)
         //{
