@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th>
-               Date
+               Client
             </th>
             <th>
-                Client
+                Date
             </th>
             <th></th>
         </tr>
@@ -31,17 +31,17 @@
             }
         <tr class="@selectedRow">
             <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Client.FullName)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
             @*<td>
-                @foreach (var exercise in item.TrainingExercises)
-                {
-                    @exercise.Exercise.Title <br />
-                }
-            </td>*@
+            @foreach (var exercise in item.TrainingExercises)
+            {
+                @exercise.Exercise.Title <br />
+            }
+        </td>*@
 
             <td>
                 <a asp-action="Edit" asp-route-id="@item.TrainingID">Edit</a> |
