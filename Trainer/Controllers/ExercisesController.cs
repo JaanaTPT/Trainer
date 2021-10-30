@@ -20,11 +20,35 @@ namespace Trainer.Controllers
         }
 
         // GET: Exercises
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            var exercises = _context.Exercises
-                .AsNoTracking();
-            return View(await exercises.ToListAsync());
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["MuscleSortParm"] = sortOrder == "Muscle" ? "muscle_desc" : "Muscle";
+            ViewData["CurrentFilter"] = searchString;
+            var exercises = from e in _context.Exercises
+                            select e;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                exercises = exercises.Where(e => e.Title.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    exercises = exercises.OrderByDescending(e => e.Title);
+                    break;
+                case "Muscle":
+                    exercises = exercises.OrderBy(e => e.MuscleGroup);
+                    break;
+                case "muscle_desc":
+                    exercises = exercises.OrderByDescending(e => e.MuscleGroup);
+                    break;
+                default:
+                    exercises = exercises.OrderBy(e => e.Title);
+                    break;
+            }
+
+            return View(await exercises.AsNoTracking().ToListAsync());
         }
 
         // GET: Exercises/Details/5
@@ -64,6 +88,11 @@ namespace Trainer.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            var statuses = from MuscleGroup s in Enum.GetValues(typeof(MuscleGroup))
+                           select new {Name = s.ToString() };
+            //ViewData["MuscleGroup"] = new SelectList(statuses);
+
             return View(exercise);
         }
 

@@ -9,7 +9,7 @@ namespace Trainer.Models
 {
     public enum MuscleGroup
     {
-        Chest, Back, Arms, Abdominals, Legs, Shoulders
+        Abdominals, Arms, Back, Chest, Legs, Shoulders
     }
     public class Exercise
     {

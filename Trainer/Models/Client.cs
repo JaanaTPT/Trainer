@@ -27,6 +27,7 @@ namespace Trainer.Models
         [Display(Name = "Current weight")]
         public int CurrentWeight { get; set; }
         public int Height { get; set; }
+
         [Display(Name = "Additional info")]
         public String AdditionalInfo { get; set; }
         [Display(Name = "Full Name")]

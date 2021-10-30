@@ -31,8 +31,15 @@ namespace Trainer.Controllers
         //    return View(await trainings.ToListAsync());
         //}
 
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int? id, string searchString)
         {
+            ViewData["CurrentFilter"] = searchString;
+            var trainings = from t in _context.Trainings
+                            select t;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                trainings = trainings.Where(t => t.Client.FullName.Contains(searchString));
+            }
             var viewModel = new TrainingDetailsData();
             viewModel.Trainings = await _context.Trainings
                   .Include(i => i.Client)

@@ -20,11 +20,19 @@ namespace Trainer.Controllers
         }
 
         // GET: TrainingExercises
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
+            ViewData["CurrentFilter"] = searchString;
             var trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client);
+
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    trainingContext = trainingContext.Where(t => t.Training.Client.FullName.Contains(searchString));
+            //}
+
             return View(await trainingContext.ToListAsync());
         }
+
 
         // GET: TrainingExercises/Details/5
         public async Task<IActionResult> Details(int? id)
