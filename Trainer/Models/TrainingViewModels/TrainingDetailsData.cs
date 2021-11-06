@@ -11,6 +11,6 @@ namespace Trainer.Models.TrainingViewModels
             public IEnumerable<Training> Trainings { get; set; }
             public IEnumerable<TrainingExercise> TrainingExercises { get; set; }
             public IEnumerable<Exercise> Exercises { get; set; }
-     
+
     }
 }

@@ -20,26 +20,12 @@ namespace Trainer.Controllers
             _context = context;
         }
 
-        // GET: Trainings
-        //public async Task<IActionResult> Index()
-        //{
-        //    var trainings = _context.Trainings
-        //        .Include(c => c.Client)
-        //        .Include(c => c.TrainingExercises)
-        //            .ThenInclude(c => c.Exercise)
-        //        .AsNoTracking();
-        //    return View(await trainings.ToListAsync());
-        //}
-
         public async Task<IActionResult> Index(int? id, string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            var trainings = from t in _context.Trainings
-                            select t;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                trainings = trainings.Where(t => t.Client.FullName.Contains(searchString));
-            }
+            //var trainings = from t in _context.Trainings
+            //                select t;
+
             var viewModel = new TrainingDetailsData();
             viewModel.Trainings = await _context.Trainings
                   .Include(i => i.Client)
@@ -54,7 +40,18 @@ namespace Trainer.Controllers
                 ViewData["TrainingID"] = id.Value;
                 Training training = viewModel.Trainings.Where(
                     i => i.TrainingID == id.Value).Single();
-                viewModel.Exercises = training.TrainingExercises.Select(s => s.Exercise);
+                viewModel.Exercises = training.TrainingExercises.Select(i => i.Exercise);
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                viewModel.Trainings = await _context.Trainings
+                 .Include(i => i.Client).Where(i => i.Client.FirstName.Contains(searchString) || i.Client.LastName.Contains(searchString))
+                 .Include(i => i.TrainingExercises)
+                   .ThenInclude(i => i.Exercise)
+                 .AsNoTracking()
+                 .OrderBy(i => i.Date)
+                 .ToListAsync();
             }
 
             return View(viewModel);

@@ -13,7 +13,7 @@
 <form asp-action="Index" method="get">
     <div class="form-actions no-color">
         <p>
-            Find by exercise name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            Find by client name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
             <input type="submit" value="Search" class="btn btn-primary" /> |
             <a asp-action="Index">Back to Full List</a>
         </p>
@@ -23,6 +23,9 @@
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Training.TrainingID)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Training.Client.FullName)
             </th>
@@ -54,6 +57,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(model => item.TrainingID)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Training.Client.FullName)
             </td>

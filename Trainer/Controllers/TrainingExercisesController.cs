@@ -23,12 +23,13 @@ namespace Trainer.Controllers
         public async Task<IActionResult> Index(string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            var trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client);
+            IQueryable<TrainingExercise> trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client);
 
-            //if (!String.IsNullOrEmpty(searchString))
-            //{
-            //    trainingContext = trainingContext.Where(t => t.Training.Client.FullName.Contains(searchString));
-            //}
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                trainingContext = trainingContext.Where(t => t.Training.Client.FirstName.Contains(searchString)
+                                                            || t.Training.Client.LastName.Contains(searchString));
+            }
 
             return View(await trainingContext.ToListAsync());
         }
@@ -59,8 +60,10 @@ namespace Trainer.Controllers
         // GET: TrainingExercises/Create
         public IActionResult Create()
         {
+
             ViewData["ExerciseID"] = new SelectList(_context.Exercises, "ExerciseID", "Title");
-            ViewData["TrainingID"] = new SelectList(_context.Trainings, "TrainingID", "TrainingID");
+            ViewData["TrainingID"] = new SelectList(_context.Trainings, "TrainingID", "TrainingInfo");
+
             return View();
         }
 
