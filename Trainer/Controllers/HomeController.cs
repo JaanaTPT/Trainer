@@ -1,25 +1,41 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using Trainer.FileAccess;
 using Trainer.Models;
 
 namespace Trainer.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IFileClient _fileClient;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IFileClient fileClient)
         {
-            _logger = logger;
+            _fileClient = fileClient;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Index(IFormFile[] uploadedFiles)
+        {         
+            foreach (var uploadedFile in uploadedFiles)
+            {
+                using (var inputStream = uploadedFile.OpenReadStream())
+                {
+                    var fileName = Guid.NewGuid() + Path.GetExtension(uploadedFile.FileName);
+                    _fileClient.Save(FileContainerNames.Documents, fileName, inputStream);
+                }
+            }
+
             return View();
         }
 

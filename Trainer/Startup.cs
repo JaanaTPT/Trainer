@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Trainer.FileAccess;
 
 namespace Trainer
 {
@@ -31,6 +32,8 @@ namespace Trainer
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddControllersWithViews();
+
+            services.AddScoped<IFileClient, LocalFileClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
