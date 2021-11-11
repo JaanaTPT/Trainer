@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trainer.FileAccess;
+using Trainer.Core.Repository;
+using Trainer.Core.IConfiguration;
 
 namespace Trainer
 {
@@ -34,6 +36,10 @@ namespace Trainer
             services.AddControllersWithViews();
 
             services.AddScoped<IFileClient, LocalFileClient>();
+
+            services.AddScoped<IClientRepository, ClientRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

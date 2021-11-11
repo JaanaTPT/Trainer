@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
 
@@ -12,11 +13,11 @@ namespace Trainer.Controllers
 {
     public class ClientsController : Controller
     {
-        private readonly TrainingContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ClientsController(TrainingContext context)
+        public ClientsController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Clients
@@ -25,8 +26,8 @@ namespace Trainer.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "lastName_desc" : "";
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
             ViewData["CurrentFilter"] = searchString;
-            var clients = from s in _context.Clients
-                           select s;
+            var clients = await _unitOfWork.ClientRepository.List();
+                       
             if (!String.IsNullOrEmpty(searchString))
             {
                 clients = clients.Where(s => s.LastName.Contains(searchString)
@@ -55,19 +56,17 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Clients
+            var client = await _unitOfWork.ClientRepository
                 .Include(s => s.Trainings)
-                //.Include(e => e.TrainingExercises)
-                //        .ThenInclude(e => e.Exercise)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.ID == id);
+                .GetByID(id.Value);
 
             if (client == null)
             {
                 return NotFound();
             }
 
-            return View(client);
+            return View(client).FirstOrDefaultAsync;
         }
 
         // GET: Clients/Create
@@ -76,9 +75,6 @@ namespace Trainer.Controllers
             return View();
         }
 
-        // POST: Clients/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("FirstName,LastName,DateOfBirth,Gender,StartWeight,CurrentWeight,Height,AdditionalInfo")] Client client)
@@ -87,14 +83,13 @@ namespace Trainer.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _context.Add(client);
-                    await _context.SaveChangesAsync();
+                    await _unitOfWork.ClientRepository.Save(client);
+                    await _unitOfWork.CommitAsync();
                     return RedirectToAction(nameof(Index));
                 }
             }
             catch (DbUpdateException /* ex */)
             {
-                //Log the error (uncomment ex variable name and write a log.
                 ModelState.AddModelError("", "Unable to save changes. " +
                     "Try again, and if the problem persists " +
                     "see your system administrator.");
@@ -110,7 +105,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Clients.FindAsync(id);
+            var client = await _unitOfWork.ClientRepository.GetById(id.Value);
             if (client == null)
             {
                 return NotFound();
@@ -129,7 +124,7 @@ namespace Trainer.Controllers
             {
                 return NotFound();
             }
-            var clientToUpdate = await _context.Clients.FirstOrDefaultAsync(c => c.ID == id);
+            var clientToUpdate = await _unitOfWork.ClientRepository.GetById(id.Value);
             if (await TryUpdateModelAsync<Client>(
                 clientToUpdate,
                 "",
@@ -137,7 +132,7 @@ namespace Trainer.Controllers
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await _unitOfWork.CommitAsync();
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException /* ex */)
@@ -159,9 +154,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Clients
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var client = await _unitOfWork.ClientRepository.GetById(id.Value);
 
             if (client == null)
             {
@@ -183,7 +176,7 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var client = await _context.Clients.FindAsync(id);
+            var client = _unitOfWork.ClientRepository.GetById(id);
             if (client == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -191,8 +184,8 @@ namespace Trainer.Controllers
 
             try
             {
-                _context.Clients.Remove(client);
-                await _context.SaveChangesAsync();
+                await _unitOfWork.ClientRepository.Delete(client);
+                await _unitOfWork.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException /* ex */)
@@ -204,7 +197,7 @@ namespace Trainer.Controllers
 
         private bool ClientExists(int id)
         {
-            return _context.Clients.Any(e => e.ID == id);
+            return _unitOfWork.ClientRepository.GetById(id) != null;
         }
     }
 }
