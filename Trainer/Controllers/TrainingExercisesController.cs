@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Trainer.Data;
 using Trainer.Models;
+using System.Diagnostics;
 
 namespace Trainer.Controllers
 {
@@ -19,21 +20,39 @@ namespace Trainer.Controllers
             _context = context;
         }
 
-        // GET: TrainingExercises
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(string searchString, int page = 1)
         {
             ViewData["CurrentFilter"] = searchString;
-            IQueryable<TrainingExercise> trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client);
+            var results = await _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client).GetPagedAsync(page, 10);
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                trainingContext = trainingContext.Where(t => t.Training.Client.FirstName.Contains(searchString)
+                results = results.Where(t => t.Training.Client.FirstName.Contains(searchString)
                                                             || t.Training.Client.LastName.Contains(searchString));
             }
 
-            return View(await trainingContext.ToListAsync());
+            return View(results);
         }
 
+        // GET: TrainingExercises
+        //public async Task<IActionResult> Index(string searchString)
+        //{
+        //    ViewData["CurrentFilter"] = searchString;
+        //    IQueryable<TrainingExercise> trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client);
+
+        //    if (!String.IsNullOrEmpty(searchString))
+        //    {
+        //        trainingContext = trainingContext.Where(t => t.Training.Client.FirstName.Contains(searchString)
+        //                                                    || t.Training.Client.LastName.Contains(searchString));
+        //    }
+
+        //    return View(await trainingContext.ToListAsync());
+        //}
+
+        public async Task<PagedResult<TrainingExercise>> IndexApi(int page = 1)
+        {
+            return await _context.TrainingExercises.GetPagedAsync(page, 10);
+        }
 
         // GET: TrainingExercises/Details/5
         public async Task<IActionResult> Details(int? id)

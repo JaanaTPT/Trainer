@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Trainer.Models.TrainingExercise>
+﻿@model Trainer.Data.PagedResult<TrainingExercise>
 
 @{
     ViewData["Title"] = "Training exercises";
@@ -20,77 +20,82 @@
     </div>
 </form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Training.TrainingID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Training.Client.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Training.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Exercise)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rounds)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Repetitions)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MaxWeight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Comments)
-            </th>
-            @*<th>
-            @Html.DisplayNameFor(model => model.Training)
-        </th>*@
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                   Training ID
+                </th>
+                <th>
+                    Client name
+                </th>
+                <th>
+                    Training date
+                </th>
+                <th>
+                    Exercise
+                </th>
+                <th>
+                    Rounds
+                </th>
+                <th>
+                    Repetitions
+                </th>
+                <th>
+                    MaxWeight
+                </th>
+                <th>
+                    Comments
+                </th>
+                @*<th>
+                        @Html.DisplayNameFor(model => model.Training)
+                    </th>*@
 
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.TrainingID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Training.Client.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Training.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Exercise.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rounds)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Repetitions)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaxWeight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Comments)
-            </td>
-            @*<td>
-            @Html.DisplayFor(modelItem => item.Training.TrainingID)
-        </td>*@
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Results)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.TrainingID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Training.Client.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Training.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Exercise.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Rounds)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Repetitions)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MaxWeight)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comments)
+                    </td>
+                    @*<td>
+                            @Html.DisplayFor(modelItem => item.Training.TrainingID)
+                        </td>*@
 
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.TrainingExerciseID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.TrainingExerciseID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.TrainingExerciseID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.TrainingExerciseID">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.TrainingExerciseID">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.TrainingExerciseID">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <vc:pager result="Model" view-name="Default" />
+</div>
