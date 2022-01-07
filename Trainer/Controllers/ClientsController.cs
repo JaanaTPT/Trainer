@@ -26,7 +26,7 @@ namespace Trainer.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "lastName_desc" : "";
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
             ViewData["CurrentFilter"] = searchString;
-            var clients = await _unitOfWork.ClientRepository.List();
+            IEnumerable<Client> clients = await _unitOfWork.ClientRepository.List();
                        
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -45,7 +45,7 @@ namespace Trainer.Controllers
                     clients = clients.OrderBy(s => s.FirstName);
                     break;
             }
-            return View(await clients.AsNoTracking().ToListAsync());
+            return View(clients.ToList());
         }
 
         // GET: Clients/Details/5
@@ -57,16 +57,14 @@ namespace Trainer.Controllers
             }
 
             var client = await _unitOfWork.ClientRepository
-                .Include(s => s.Trainings)
-                .AsNoTracking()
-                .GetByID(id.Value);
+               .GetById(id.Value);
 
             if (client == null)
             {
                 return NotFound();
             }
 
-            return View(client).FirstOrDefaultAsync;
+            return View(client);
         }
 
         // GET: Clients/Create
@@ -176,7 +174,7 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var client = _unitOfWork.ClientRepository.GetById(id);
+            var client = await _unitOfWork.ClientRepository.GetById(id);
             if (client == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -184,7 +182,7 @@ namespace Trainer.Controllers
 
             try
             {
-                await _unitOfWork.ClientRepository.Delete(client);
+                _unitOfWork.ClientRepository.Delete(client);
                 await _unitOfWork.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }

@@ -16,5 +16,11 @@ namespace Trainer.Core.Repository
         {
             _context = context;
         }
+
+        public async Task<Client> GetById(int id)
+        {
+           return await _context.Clients.Include(s => s.Trainings).FirstOrDefaultAsync(c => c.ID == id);
+           
+        }
     }
-}
+} 
