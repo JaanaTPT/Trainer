@@ -30,8 +30,8 @@ namespace Trainer.Controllers
                        
             if (!String.IsNullOrEmpty(searchString))
             {
-                clients = clients.Where(s => s.LastName.Contains(searchString)
-                                       || s.FirstName.Contains(searchString));
+                clients = clients.Where(s => s.LastName.ToLower().Contains(searchString.ToLower())
+                                       || s.FirstName.ToLower().Contains(searchString.ToLower()));
             }
             switch (sortOrder)
             {

@@ -25,11 +25,11 @@ namespace Trainer.Controllers
             ViewData["CurrentFilter"] = searchString;
             var results = await _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client).GetPagedAsync(page, 10);
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                results = results.Where(t => t.Training.Client.FirstName.Contains(searchString)
-                                                            || t.Training.Client.LastName.Contains(searchString));
-            }
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    results = results.Where(t => t.Training.Client.FirstName.Contains(searchString)
+            //                                                || t.Training.Client.LastName.Contains(searchString));
+            //}
 
             return View(results);
         }

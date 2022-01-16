@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Trainer.Models;
 
-namespace Trainer.Core.Repository
+namespace Trainer.Core.Repository.ExerciseRepo
 {
-    public interface IClientRepository : IBaseRepository<Client>
+    public interface IExerciseRepository : IBaseRepository<Exercise>
     {
-
     }
 }

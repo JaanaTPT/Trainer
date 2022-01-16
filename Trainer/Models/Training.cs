@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Trainer.Models
 {
-    public class Training
+    public class Training : Entity
     {
         public int TrainingID { get; set; }
         [DataType(DataType.Date)]

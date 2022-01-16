@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Trainer.Models
 {
-    public class TrainingExercise
+    public class TrainingExercise : Entity
     {
         public int TrainingExerciseID { get; set; }
         public int TrainingID { get; set; }

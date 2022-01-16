@@ -11,7 +11,7 @@ namespace Trainer.Models
     {
         Abdominals, Arms, Back, Chest, Legs, Shoulders
     }
-    public class Exercise
+    public class Exercise : Entity
     {
         public int ExerciseID { get; set; }
         [Required]

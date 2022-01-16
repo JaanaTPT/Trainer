@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trainer.Models;
 
-namespace Trainer.Core.Repository
+namespace Trainer.Core.Repository.ClientRepo
 {
     public class FakeClientRepository : IClientRepository
     {

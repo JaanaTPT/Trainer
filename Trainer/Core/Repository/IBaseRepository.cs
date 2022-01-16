@@ -8,8 +8,8 @@ namespace Trainer.Core.Repository
 {
     public interface IBaseRepository<T>
     {
-        Task Save(T client);
-        void Delete(T client);
+        Task Save(T instance);
+        void Delete(T instance);
         Task<T> GetById(int id);
         Task<List<T>> List();
     }
