@@ -13,7 +13,7 @@ namespace Trainer.Models
     }
     public class Exercise : Entity
     {
-        public int ExerciseID { get; set; }
+        //public int ExerciseID { get; set; }
         [Required]
         [Display(Name = "Exercise name")]
         public string Title { get; set; }

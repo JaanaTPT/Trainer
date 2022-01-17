@@ -8,7 +8,7 @@ namespace Trainer.Models
 {
     public class Training : Entity
     {
-        public int TrainingID { get; set; }
+        //public int TrainingID { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Training date")]

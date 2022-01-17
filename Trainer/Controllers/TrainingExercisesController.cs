@@ -67,7 +67,7 @@ namespace Trainer.Controllers
                 .Include(t => t.Training)
                     .ThenInclude(t => t.Client)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.TrainingExerciseID == id);
+                .FirstOrDefaultAsync(m => m.ID == id);
             if (trainingExercise == null)
             {
                 return NotFound();
@@ -129,7 +129,7 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TrainingExerciseID,TrainingID,ExerciseID,Rounds,Repetitions,MaxWeight,Comments")] TrainingExercise trainingExercise)
         {
-            if (id != trainingExercise.TrainingExerciseID)
+            if (id != trainingExercise.ID)
             {
                 return NotFound();
             }
@@ -143,7 +143,7 @@ namespace Trainer.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TrainingExerciseExists(trainingExercise.TrainingExerciseID))
+                    if (!TrainingExerciseExists(trainingExercise.ID))
                     {
                         return NotFound();
                     }
@@ -170,7 +170,7 @@ namespace Trainer.Controllers
             var trainingExercise = await _context.TrainingExercises
                 .Include(t => t.Exercise)
                 .Include(t => t.Training)
-                .FirstOrDefaultAsync(m => m.TrainingExerciseID == id);
+                .FirstOrDefaultAsync(m => m.ID == id);
             if (trainingExercise == null)
             {
                 return NotFound();
@@ -192,7 +192,7 @@ namespace Trainer.Controllers
 
         private bool TrainingExerciseExists(int id)
         {
-            return _context.TrainingExercises.Any(e => e.TrainingExerciseID == id);
+            return _context.TrainingExercises.Any(e => e.ID == id);
         }
     }
 }

@@ -39,7 +39,7 @@
             @Html.DisplayNameFor(model => model.Training)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Training.TrainingID)
+            @Html.DisplayFor(model => model.Training.ID)
         </dd class>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Exercise)
@@ -50,7 +50,7 @@
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="TrainingExerciseID" />
+        <input type="hidden" asp-for="ID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

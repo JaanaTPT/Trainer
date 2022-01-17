@@ -39,7 +39,7 @@ namespace Trainer.Controllers
             {
                 ViewData["TrainingID"] = id.Value;
                 Training training = viewModel.Trainings.Where(
-                    i => i.TrainingID == id.Value).Single();
+                    i => i.ID == id.Value).Single();
                 viewModel.Exercises = training.TrainingExercises.Select(i => i.Exercise);
             }
 
@@ -68,7 +68,7 @@ namespace Trainer.Controllers
 
             var training = await _context.Trainings
                 .Include(t => t.Client)
-                .FirstOrDefaultAsync(m => m.TrainingID == id);
+                .FirstOrDefaultAsync(m => m.ID == id);
             if (training == null)
             {
                 return NotFound();
@@ -125,7 +125,7 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TrainingID,Date,ClientID")] Training training)
         {
-            if (id != training.TrainingID)
+            if (id != training.ID)
             {
                 return NotFound();
             }
@@ -139,7 +139,7 @@ namespace Trainer.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TrainingExists(training.TrainingID))
+                    if (!TrainingExists(training.ID))
                     {
                         return NotFound();
                     }
@@ -164,7 +164,7 @@ namespace Trainer.Controllers
 
             var training = await _context.Trainings
                 .Include(t => t.Client)
-                .FirstOrDefaultAsync(m => m.TrainingID == id);
+                .FirstOrDefaultAsync(m => m.ID == id);
             if (training == null)
             {
                 return NotFound();
@@ -186,7 +186,7 @@ namespace Trainer.Controllers
 
         private bool TrainingExists(int id)
         {
-            return _context.Trainings.Any(e => e.TrainingID == id);
+            return _context.Trainings.Any(e => e.ID == id);
         }
     }
 }
