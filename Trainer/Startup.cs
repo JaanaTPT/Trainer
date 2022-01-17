@@ -13,6 +13,10 @@ using System.Threading.Tasks;
 using Trainer.FileAccess;
 using Trainer.Core.Repository;
 using Trainer.Core.IConfiguration;
+using Trainer.Core.Repository.ClientRepo;
+using Trainer.Core.Repository.TrainingRepo;
+using Trainer.Core.Repository.TrainingExerciseRepo;
+using Trainer.Core.Repository.ExerciseRepo;
 
 namespace Trainer
 {
@@ -38,6 +42,12 @@ namespace Trainer
             services.AddScoped<IFileClient, LocalFileClient>();
 
             services.AddScoped<IClientRepository, ClientRepository>();
+
+            services.AddScoped<ITrainingRepository, TrainingRepository>();
+
+            services.AddScoped<ITrainingExerciseRepository, TrainingExerciseRepository>();
+
+            services.AddScoped<IExerciseRepository, ExerciseRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
