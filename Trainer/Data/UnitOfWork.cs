@@ -21,11 +21,17 @@ namespace Trainer.Data
         public ITrainingExerciseRepository TrainingExerciseRepository { get; private set; }
 
         public UnitOfWork(TrainingContext context,
-                          IClientRepository clientRepository)
+                          IClientRepository clientRepository,
+                          IExerciseRepository exerciseRepository,
+                          ITrainingRepository trainingRepository,
+                          ITrainingExerciseRepository trainingExerciseRepository)
         {
             _context = context;
 
             ClientRepository = clientRepository;
+            ExerciseRepository = exerciseRepository;
+            TrainingRepository = trainingRepository;
+            TrainingExerciseRepository = trainingExerciseRepository;
         }
 
         public async Task CommitAsync()
