@@ -20,7 +20,7 @@ namespace Trainer.Core.Repository.TrainingRepo
 
         public async Task<Training> GetById(int id)
         {
-            return await _context.Trainings.Include(s => s.TrainingExercises).FirstOrDefaultAsync(c => c.ID == id);
+            return await _context.Trainings.Include(s => s.Client).Include(t =>t.TrainingExercises).ThenInclude(i => i.Exercise).OrderBy(v => v.Date).FirstOrDefaultAsync(c => c.ID == id);
 
         }
     }

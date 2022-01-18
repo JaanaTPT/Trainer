@@ -102,7 +102,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var exercise = await _unitOfWork.ClientRepository.GetById(id.Value);
+            var exercise = await _unitOfWork.ExerciseRepository.GetById(id.Value);
             if (exercise == null)
             {
                 return NotFound();
@@ -176,7 +176,7 @@ namespace Trainer.Controllers
 
         private bool ExerciseExists(int id)
         {
-            return _unitOfWork.ClientRepository.GetById(id) != null;
+            return _unitOfWork.ExerciseRepository.GetById(id) != null;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
 using Trainer.Models.TrainingViewModels;
@@ -13,11 +14,11 @@ namespace Trainer.Controllers
 {
     public class TrainingsController : Controller
     {
-        private readonly TrainingContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TrainingsController(TrainingContext context)
+        public TrainingsController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IActionResult> Index(int? id, string searchString)
@@ -66,9 +67,13 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var training = await _context.Trainings
-                .Include(t => t.Client)
-                .FirstOrDefaultAsync(m => m.ID == id);
+            //var training = await _context.Trainings
+            //    .Include(t => t.Client)
+            //    .FirstOrDefaultAsync(m => m.ID == id);
+
+            var training = await _unitOfWork.ClientRepository
+               .GetById(id.Value);
+
             if (training == null)
             {
                 return NotFound();
@@ -80,7 +85,7 @@ namespace Trainer.Controllers
         // GET: Trainings/Create
         public IActionResult Create()
         {
-            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FullName");
+            ViewData["ClientID"] = new SelectList(_unitOfWork.Clients, "ID", "FullName");
             return View();
         }
 
@@ -93,11 +98,11 @@ namespace Trainer.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(training);
-                await _context.SaveChangesAsync();
+                await _unitOfWork.TrainingRepository.Save(training);
+                await _unitOfWork.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FullName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_unitOfWork.Clients, "ID", "FullName", training.ClientID);
             return View(training);
         }
 
@@ -109,12 +114,12 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var training = await _context.Trainings.FindAsync(id);
+            var training = await _unitOfWork.TrainingRepository.GetById(id.Value);
             if (training == null)
             {
                 return NotFound();
             }
-            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FirstName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_unitOfWork.Clients, "ID", "FirstName", training.ClientID);
             return View(training);
         }
 
@@ -134,8 +139,8 @@ namespace Trainer.Controllers
             {
                 try
                 {
-                    _context.Update(training);
-                    await _context.SaveChangesAsync();
+                    await _unitOfWork.CommitAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -162,9 +167,12 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var training = await _context.Trainings
-                .Include(t => t.Client)
-                .FirstOrDefaultAsync(m => m.ID == id);
+            //var training = await _context.Trainings
+            //    .Include(t => t.Client)
+            //    .FirstOrDefaultAsync(m => m.ID == id);
+
+            var training = _unitOfWork.TrainingRepository.GetById(id.Value);
+
             if (training == null)
             {
                 return NotFound();
@@ -178,15 +186,15 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var training = await _context.Trainings.FindAsync(id);
-            _context.Trainings.Remove(training);
-            await _context.SaveChangesAsync();
+            var training = await _unitOfWork.TrainingRepository.GetById(id);
+            _unitOfWork.TrainingRepository.Delete(training);
+            await _unitOfWork.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TrainingExists(int id)
         {
-            return _context.Trainings.Any(e => e.ID == id);
+            return _unitOfWork.TrainingRepository.GetById(id) != null;
         }
     }
 }
