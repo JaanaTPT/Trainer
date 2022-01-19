@@ -1,35 +1,40 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
-using System.Diagnostics;
 
 namespace Trainer.Controllers
 {
     public class TrainingExercisesController : Controller
     {
-        private readonly TrainingContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public TrainingExercisesController(TrainingContext context)
+        public TrainingExercisesController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IActionResult> Index(string searchString, int page = 1)
         {
             ViewData["CurrentFilter"] = searchString;
-            var results = await _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client).GetPagedAsync(page, 10);
+            var results = await _unitOfWork.TrainingExerciseRepository
+                                        .Include(t => t.Exercise)
+                                        .Include(t => t.Training)
+                                            .ThenInclude(t => t.Client)
+                                        .GetPagedAsync(page, 10);
 
-            //if (!String.IsNullOrEmpty(searchString))
-            //{
-            //    results = results.Where(t => t.Training.Client.FirstName.Contains(searchString)
-            //                                                || t.Training.Client.LastName.Contains(searchString));
-            //}
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                results = results.Where(t => t.Training.Client.FirstName.Contains(searchString)
+                                                            || t.Training.Client.LastName.Contains(searchString));
+            }
 
             return View(results);
         }
@@ -51,7 +56,8 @@ namespace Trainer.Controllers
 
         public async Task<PagedResult<TrainingExercise>> IndexApi(int page = 1)
         {
-            return await _context.TrainingExercises.GetPagedAsync(page, 10);
+            //return await _context.TrainingExercises.GetPagedAsync(page, 10);
+            return await _unitOfWork.TrainingExercises.GetPagedAsync(page, 10);
         }
 
         // GET: TrainingExercises/Details/5
@@ -62,12 +68,9 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExercise = await _context.TrainingExercises
-                .Include(t => t.Exercise)
-                .Include(t => t.Training)
-                    .ThenInclude(t => t.Client)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var trainingExercise = await _unitOfWork.TrainingExerciseRepository
+               .GetById(id.Value);
+
             if (trainingExercise == null)
             {
                 return NotFound();
@@ -80,8 +83,8 @@ namespace Trainer.Controllers
         public IActionResult Create()
         {
 
-            ViewData["ExerciseID"] = new SelectList(_context.Exercises, "ExerciseID", "Title");
-            ViewData["TrainingID"] = new SelectList(_context.Trainings, "TrainingID", "TrainingInfo");
+            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title");
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingInfo");
 
             return View();
         }
@@ -95,12 +98,12 @@ namespace Trainer.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(trainingExercise);
-                await _context.SaveChangesAsync();
+                await _unitOfWork.TrainingExerciseRepository.Save(trainingExercise);
+                await _unitOfWork.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ExerciseID"] = new SelectList(_context.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_context.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
+            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
             return View(trainingExercise);
         }
 
@@ -112,20 +115,20 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExercise = await _context.TrainingExercises.FindAsync(id);
+            var trainingExercise = await _unitOfWork.TrainingExerciseRepository.GetById(id.Value);
             if (trainingExercise == null)
             {
                 return NotFound();
             }
-            ViewData["ExerciseID"] = new SelectList(_context.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_context.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
+            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
             return View(trainingExercise);
         }
 
         // POST: TrainingExercises/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TrainingExerciseID,TrainingID,ExerciseID,Rounds,Repetitions,MaxWeight,Comments")] TrainingExercise trainingExercise)
         {
@@ -138,8 +141,8 @@ namespace Trainer.Controllers
             {
                 try
                 {
-                    _context.Update(trainingExercise);
-                    await _context.SaveChangesAsync();
+                    await _unitOfWork.CommitAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -154,8 +157,8 @@ namespace Trainer.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ExerciseID"] = new SelectList(_context.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_context.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
+            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
             return View(trainingExercise);
         }
 
@@ -167,10 +170,8 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExercise = await _context.TrainingExercises
-                .Include(t => t.Exercise)
-                .Include(t => t.Training)
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var trainingExercise = await _unitOfWork.TrainingExerciseRepository.GetById(id.Value);
+
             if (trainingExercise == null)
             {
                 return NotFound();
@@ -184,15 +185,16 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var trainingExercise = await _context.TrainingExercises.FindAsync(id);
-            _context.TrainingExercises.Remove(trainingExercise);
-            await _context.SaveChangesAsync();
+            var trainingExercise = await _unitOfWork.TrainingExerciseRepository.GetById(id);
+
+            _unitOfWork.TrainingExerciseRepository.Delete(trainingExercise);
+            await _unitOfWork.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TrainingExerciseExists(int id)
         {
-            return _context.TrainingExercises.Any(e => e.ID == id);
+            return _unitOfWork.TrainingExerciseRepository.GetById(id) != null;
         }
     }
 }

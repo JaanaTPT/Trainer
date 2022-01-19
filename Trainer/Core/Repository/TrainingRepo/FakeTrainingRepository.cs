@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ namespace Trainer.Core.Repository.TrainingRepo
     public class FakeTrainingRepository : ITrainingRepository
     {
         private List<Training> _trainingList = new List<Training>();
+
+        IEnumerable ITrainingRepository.Clients { get; set; }
 
         public async Task Save(Training training)
         {

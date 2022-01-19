@@ -17,10 +17,14 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
             _context = context;
         }
 
+        DbSet<Exercise> ITrainingExerciseRepository.Exercises { get; set; }
+        DbSet<Training> ITrainingExerciseRepository.Trainings { get; set; }
+
         public async Task<TrainingExercise> GetById(int id)
         {
-            return await _context.TrainingExercises.Include(s => s.Exercise).FirstOrDefaultAsync(c => c.ID == id);
+            return await _context.TrainingExercises.Include(s => s.Exercise).Include(t => t.Training).ThenInclude(t => t.Client).FirstOrDefaultAsync(c => c.ID == id);
 
         }
+
     }
 }

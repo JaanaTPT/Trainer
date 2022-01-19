@@ -28,13 +28,17 @@ namespace Trainer.Controllers
             //                select t;
 
             var viewModel = new TrainingDetailsData();
-            viewModel.Trainings = await _context.Trainings
-                  .Include(i => i.Client)
-                  .Include(i => i.TrainingExercises)
-                    .ThenInclude(i => i.Exercise)
-                  .AsNoTracking()
-                  .OrderBy(i => i.Date)
-                  .ToListAsync();
+            //viewModel.Trainings = await _context.Trainings
+            //      .Include(i => i.Client)
+            //      .Include(i => i.TrainingExercises)
+            //        .ThenInclude(i => i.Exercise)
+            //      .AsNoTracking()
+            //      .OrderBy(i => i.Date)
+            //      .ToListAsync();
+
+
+            // nii võiks saada, aga tekib andmetüübi probleem
+            viewModel.Trainings = await _unitOfWork.TrainingRepository.GetById(id.Value);
 
             if (id != null)
             {
@@ -85,7 +89,7 @@ namespace Trainer.Controllers
         // GET: Trainings/Create
         public IActionResult Create()
         {
-            ViewData["ClientID"] = new SelectList(_unitOfWork.Clients, "ID", "FullName");
+            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FullName");
             return View();
         }
 
@@ -102,7 +106,7 @@ namespace Trainer.Controllers
                 await _unitOfWork.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientID"] = new SelectList(_unitOfWork.Clients, "ID", "FullName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FullName", training.ClientID);
             return View(training);
         }
 
@@ -119,14 +123,14 @@ namespace Trainer.Controllers
             {
                 return NotFound();
             }
-            ViewData["ClientID"] = new SelectList(_unitOfWork.Clients, "ID", "FirstName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FirstName", training.ClientID);
             return View(training);
         }
 
         // POST: Trainings/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TrainingID,Date,ClientID")] Training training)
         {
@@ -155,7 +159,7 @@ namespace Trainer.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientID"] = new SelectList(_context.Clients, "ID", "FirstName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FirstName", training.ClientID);
             return View(training);
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace Trainer.Core.Repository.TrainingRepo
         {
             _context = context;
         }
+
+        IEnumerable ITrainingRepository.Clients { get ; set; }
 
         public async Task<Training> GetById(int id)
         {
