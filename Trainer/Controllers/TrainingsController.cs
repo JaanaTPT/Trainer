@@ -24,10 +24,11 @@ namespace Trainer.Controllers
         public async Task<IActionResult> Index(int? id, string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            //var trainings = from t in _context.Trainings
-            //                select t;
 
             var viewModel = new TrainingDetailsData();
+
+            //enne UOW kasutuselevõttu oli mul nii tehtud:
+
             //viewModel.Trainings = await _context.Trainings
             //      .Include(i => i.Client)
             //      .Include(i => i.TrainingExercises)

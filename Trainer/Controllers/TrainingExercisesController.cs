@@ -39,20 +39,6 @@ namespace Trainer.Controllers
             return View(results);
         }
 
-        // GET: TrainingExercises
-        //public async Task<IActionResult> Index(string searchString)
-        //{
-        //    ViewData["CurrentFilter"] = searchString;
-        //    IQueryable<TrainingExercise> trainingContext = _context.TrainingExercises.Include(t => t.Exercise).Include(t => t.Training).ThenInclude(t => t.Client);
-
-        //    if (!String.IsNullOrEmpty(searchString))
-        //    {
-        //        trainingContext = trainingContext.Where(t => t.Training.Client.FirstName.Contains(searchString)
-        //                                                    || t.Training.Client.LastName.Contains(searchString));
-        //    }
-
-        //    return View(await trainingContext.ToListAsync());
-        //}
 
         public async Task<PagedResult<TrainingExercise>> IndexApi(int page = 1)
         {
