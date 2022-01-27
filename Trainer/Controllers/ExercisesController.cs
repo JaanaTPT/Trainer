@@ -87,8 +87,8 @@ namespace Trainer.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var statuses = from MuscleGroup s in Enum.GetValues(typeof(MuscleGroup))
-                           select new {Name = s.ToString() };
+            //var statuses = from MuscleGroup s in Enum.GetValues(typeof(MuscleGroup))
+            //               select new {Name = s.ToString() };
             //ViewData["MuscleGroup"] = new SelectList(statuses);
 
             return View(exercise);
@@ -115,35 +115,34 @@ namespace Trainer.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ExerciseID,Title,MuscleGroup")] Exercise exercise)
+        public async Task<IActionResult> EditPost(int? id, [Bind("ExerciseID,Title,MuscleGroup")] Exercise exercise)
         {
-            if (id != exercise.ID)
+            if (id == null)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            var exerciseToUpdate = await _unitOfWork.ExerciseRepository.GetById(id.Value);
+            if (await TryUpdateModelAsync<Exercise>(
+                exerciseToUpdate,
+                "",
+                e => e.Title, e => e.MuscleGroup))
             {
                 try
                 {
                     await _unitOfWork.CommitAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException /* ex */)
                 {
-                    if (!ExerciseExists(exercise.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(exercise);
+            return View(exerciseToUpdate);
         }
+
 
         // GET: Exercises/Delete/5
         public async Task<IActionResult> Delete(int? id)
