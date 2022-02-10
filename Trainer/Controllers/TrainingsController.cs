@@ -39,26 +39,33 @@ namespace Trainer.Controllers
 
 
             // nii võiks saada, aga tekib andmetüübi probleem
-            viewModel.Trainings = await _unitOfWork.TrainingRepository.GetById(id.Value);
+            // GetById tagastab ühe objekti, viewModel.Trainings tahab aga objektide loendit
+            //viewModel.Trainings = await _unitOfWork.TrainingRepository.GetById(id.Value);
+
+            viewModel.Trainings = await _unitOfWork.TrainingRepository.List(searchString);
 
             if (id != null)
             {
                 ViewData["TrainingID"] = id.Value;
-                Training training = viewModel.Trainings.Where(
-                    i => i.ID == id.Value).Single();
-                viewModel.Exercises = training.TrainingExercises.Select(i => i.Exercise);
+
+                var training = viewModel.Trainings.FirstOrDefault(t => t.ID == id.Value);
+                if(training != null)
+                {
+                    viewModel.Exercises = training.TrainingExercises.Select(te => te.Exercise);
+                }
             }
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                viewModel.Trainings = await _context.Trainings
-                 .Include(i => i.Client).Where(i => i.Client.FirstName.Contains(searchString) || i.Client.LastName.Contains(searchString))
-                 .Include(i => i.TrainingExercises)
-                   .ThenInclude(i => i.Exercise)
-                 .AsNoTracking()
-                 .OrderBy(i => i.Date)
-                 .ToListAsync();
-            }
+            // See on lahendatud repositorys
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    viewModel.Trainings = await _context.Trainings
+            //     .Include(i => i.Client).Where(i => i.Client.FirstName.Contains(searchString) || i.Client.LastName.Contains(searchString))
+            //     .Include(i => i.TrainingExercises)
+            //       .ThenInclude(i => i.Exercise)
+            //     .AsNoTracking()
+            //     .OrderBy(i => i.Date)
+            //     .ToListAsync();
+            //}
 
             return View(viewModel);
         }

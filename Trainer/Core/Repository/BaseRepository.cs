@@ -34,12 +34,12 @@ namespace Trainer.Core.Repository
             _context.Set<T>().Remove(instance);
         }
 
-        public async Task<T> GetById(int id)
+        public virtual async Task<T> GetById(int id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public async Task<List<T>> List()
+        public virtual async Task<List<T>> List()
         {
             return await _context.Set<T>().ToListAsync();
         }

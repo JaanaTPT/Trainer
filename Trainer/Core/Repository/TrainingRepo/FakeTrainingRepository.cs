@@ -36,5 +36,9 @@ namespace Trainer.Core.Repository.TrainingRepo
             return _trainingList.ToList();
         }
 
+        public Task<IList<Training>> List(string search)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
