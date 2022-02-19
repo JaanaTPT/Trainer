@@ -107,39 +107,37 @@ namespace Trainer.Controllers
         }
 
         // POST: Trainings/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TrainingID,Date,ClientID")] Training training)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != training.ID)
+            if (id == 0)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var trainingToUpdate = await _unitOfWork.TrainingRepository.GetById(id.Value);
+
+            if (await TryUpdateModelAsync<Training>(
+                trainingToUpdate,
+                "",
+                t => t.Date, t => t.ClientID));
             {
                 try
                 {
                     await _unitOfWork.CommitAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException /* ex */)
                 {
-                    if (!TrainingExists(training.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
+               
             }
-            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FirstName", training.ClientID);
-            return View(training);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Trainings/Delete/5
