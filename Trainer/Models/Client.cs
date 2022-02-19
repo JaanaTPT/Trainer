@@ -8,15 +8,10 @@ namespace Trainer.Models
 {
     public class Client : Entity
     {
-        private string _firstName;
         [Required]
         [StringLength(50)]
         [Display(Name = "First name")]
-        public string FirstName 
-        {
-            get { return _firstName; }
-            set { _firstName = value; }
-        }
+        public string FirstName { get; set; }
         [Required]
         [StringLength(50)]
         [Display(Name = "Last name")]

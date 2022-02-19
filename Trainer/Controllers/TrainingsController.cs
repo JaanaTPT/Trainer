@@ -27,21 +27,6 @@ namespace Trainer.Controllers
 
             var viewModel = new TrainingDetailsData();
 
-            //enne UOW kasutuselevõttu oli mul nii tehtud:
-
-            //viewModel.Trainings = await _context.Trainings
-            //      .Include(i => i.Client)
-            //      .Include(i => i.TrainingExercises)
-            //        .ThenInclude(i => i.Exercise)
-            //      .AsNoTracking()
-            //      .OrderBy(i => i.Date)
-            //      .ToListAsync();
-
-
-            // nii võiks saada, aga tekib andmetüübi probleem
-            // GetById tagastab ühe objekti, viewModel.Trainings tahab aga objektide loendit
-            //viewModel.Trainings = await _unitOfWork.TrainingRepository.GetById(id.Value);
-
             viewModel.Trainings = await _unitOfWork.TrainingRepository.List(searchString);
 
             if (id != null)
@@ -55,18 +40,6 @@ namespace Trainer.Controllers
                 }
             }
 
-            // See on lahendatud repositorys
-            //if (!String.IsNullOrEmpty(searchString))
-            //{
-            //    viewModel.Trainings = await _context.Trainings
-            //     .Include(i => i.Client).Where(i => i.Client.FirstName.Contains(searchString) || i.Client.LastName.Contains(searchString))
-            //     .Include(i => i.TrainingExercises)
-            //       .ThenInclude(i => i.Exercise)
-            //     .AsNoTracking()
-            //     .OrderBy(i => i.Date)
-            //     .ToListAsync();
-            //}
-
             return View(viewModel);
         }
 
@@ -79,11 +52,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            //var training = await _context.Trainings
-            //    .Include(t => t.Client)
-            //    .FirstOrDefaultAsync(m => m.ID == id);
-
-            var training = await _unitOfWork.ClientRepository
+            var training = await _unitOfWork.TrainingRepository
                .GetById(id.Value);
 
             if (training == null)
@@ -114,6 +83,7 @@ namespace Trainer.Controllers
                 await _unitOfWork.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FullName", training.ClientID);
             return View(training);
         }
