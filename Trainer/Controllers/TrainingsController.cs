@@ -66,7 +66,7 @@ namespace Trainer.Controllers
         // GET: Trainings/Create
         public IActionResult Create()
         {
-            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FullName");
+            ViewData["ClientID"] = new SelectList(_unitOfWork.ClientRepository.DropDownList().OrderBy(c => c.FullName), "ID", "FullName");
             return View();
         }
 
@@ -101,7 +101,8 @@ namespace Trainer.Controllers
             {
                 return NotFound();
             }
-            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FirstName", training.ClientID);
+
+            ViewData["ClientID"] = new SelectList(_unitOfWork.ClientRepository.DropDownList().OrderBy(c => c.FullName), "ID", "FullName", training.ClientID);
             return View(training);
         }
 
@@ -142,22 +143,25 @@ namespace Trainer.Controllers
         }
 
         // GET: Trainings/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            //var training = await _context.Trainings
-            //    .Include(t => t.Client)
-            //    .FirstOrDefaultAsync(m => m.ID == id);
-
-            var training = _unitOfWork.TrainingRepository.GetById(id.Value);
+            var training = await _unitOfWork.TrainingRepository.GetById(id.Value);
 
             if (training == null)
             {
                 return NotFound();
+            }
+
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewData["ErrorMessage"] =
+                    "Delete failed. Try again, and if the problem persists " +
+                    "see your system administrator.";
             }
 
             return View(training);
@@ -169,9 +173,22 @@ namespace Trainer.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var training = await _unitOfWork.TrainingRepository.GetById(id);
-            _unitOfWork.TrainingRepository.Delete(training);
-            await _unitOfWork.CommitAsync();
-            return RedirectToAction(nameof(Index));
+            if (training == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                _unitOfWork.TrainingRepository.Delete(training);
+                await _unitOfWork.CommitAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
+            }
         }
 
         private bool TrainingExists(int id)

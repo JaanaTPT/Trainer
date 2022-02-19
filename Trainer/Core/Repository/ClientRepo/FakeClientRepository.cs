@@ -32,5 +32,9 @@ namespace Trainer.Core.Repository.ClientRepo
             return _clientList.ToList();
         }
 
+        public IEnumerable<Client> DropDownList()
+        {
+            return _clientList;
+        }
     }
 }
