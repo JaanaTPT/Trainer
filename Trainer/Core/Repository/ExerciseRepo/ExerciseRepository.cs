@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trainer.Data;
 using Trainer.Models;
@@ -12,6 +13,11 @@ namespace Trainer.Core.Repository.ExerciseRepo
         public ExerciseRepository(TrainingContext context) : base(context)
         {
             _context = context;
+        }
+
+        public IEnumerable<Exercise> DropDownList()
+        {
+            return _context.Exercises;
         }
 
         public async Task<Exercise> GetById(int id)

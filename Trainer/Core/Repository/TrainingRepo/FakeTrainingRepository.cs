@@ -40,5 +40,10 @@ namespace Trainer.Core.Repository.TrainingRepo
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<Training> DropDownList()
+        {
+            return _trainingList;
+        }
     }
 }

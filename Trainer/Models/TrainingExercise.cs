@@ -20,13 +20,13 @@ namespace Trainer.Models
         public Training Training { get; set; }
         public Exercise Exercise { get; set; }
 
-        public string TrainingInfo
-        {
-            get
-            {
-                return Training.Date + " " + Training.Client.FullName;
-            }
-        }
+        //public string TrainingInfo
+        //{
+        //    get
+        //    {
+        //        return Training.Date + " " + Training.Client.FullName;
+        //    }
+        //}
 
     }
 }

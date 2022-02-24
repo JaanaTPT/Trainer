@@ -8,5 +8,6 @@ namespace Trainer.Core.Repository.ExerciseRepo
 {
     public interface IExerciseRepository : IBaseRepository<Exercise>
     {
+        IEnumerable<Exercise> DropDownList();
     }
 }

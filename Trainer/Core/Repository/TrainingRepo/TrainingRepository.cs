@@ -35,6 +35,12 @@ namespace Trainer.Core.Repository.TrainingRepo
             return await query.ToListAsync();
         }
 
+
+        public IEnumerable<Training> DropDownList()
+        {
+            return _context.Trainings;
+        }
+
         public override async Task<Training> GetById(int id)
         {
             return await _context.Trainings.Include(s => s.Client)

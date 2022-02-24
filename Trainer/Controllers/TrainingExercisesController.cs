@@ -59,8 +59,8 @@ namespace Trainer.Controllers
         public IActionResult Create()
         {
 
-            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title");
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingInfo");
+            ViewData["ExerciseID"] = new SelectList(_unitOfWork.ExerciseRepository.DropDownList().OrderBy(e => e.Title), "ID", "Title");
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingRepository.DropDownList(), "ID", "ID");
 
             return View();
         }
@@ -78,8 +78,8 @@ namespace Trainer.Controllers
                 await _unitOfWork.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
+            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ID", "Title", trainingExercise.ExerciseID);
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "ID", "ID", trainingExercise.TrainingID);
             return View(trainingExercise);
         }
 
@@ -96,8 +96,9 @@ namespace Trainer.Controllers
             {
                 return NotFound();
             }
-            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
+            ViewData["ExerciseID"] = new SelectList(_unitOfWork.ExerciseRepository.DropDownList().OrderBy(e => e.Title), "ID", "Title");
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingRepository.DropDownList(), "ID", "ID");
+            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingRepository.DropDownList(), "ID", "ID");
             return View(trainingExercise);
         }
 
@@ -106,36 +107,35 @@ namespace Trainer.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TrainingExerciseID,TrainingID,ExerciseID,Rounds,Repetitions,MaxWeight,Comments")] TrainingExercise trainingExercise)
+        public async Task<IActionResult> EditPost(int? id)
         {
-            if (id != trainingExercise.ID)
+            if (id == 0)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var trainingExerciseToUpdate = await _unitOfWork.TrainingExerciseRepository.GetById(id.Value);
+
+            if (await TryUpdateModelAsync<TrainingExercise>(
+                trainingExerciseToUpdate,
+                "",
+                t => t.TrainingID, t => t.ExerciseID, t => t.Rounds, t => t.Repetitions, t => t.MaxWeight, t => t.Comments));
             {
                 try
                 {
                     await _unitOfWork.CommitAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException /* ex */)
                 {
-                    if (!TrainingExerciseExists(trainingExercise.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
-                return RedirectToAction(nameof(Index));
+                
             }
-            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ExerciseID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "TrainingID", "TrainingID", trainingExercise.TrainingID);
-            return View(trainingExercise);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: TrainingExercises/Delete/5

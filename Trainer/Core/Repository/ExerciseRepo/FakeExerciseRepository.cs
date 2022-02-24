@@ -32,5 +32,10 @@ namespace Trainer.Core.Repository.ExerciseRepo
         {
             return _exerciseList.ToList();
         }
+
+        public IEnumerable<Exercise> DropDownList()
+        {
+            return _exerciseList;
+        }
     }
 }

@@ -9,5 +9,7 @@ namespace Trainer.Core.Repository.TrainingRepo
     {
         IEnumerable Clients { get; set; }
         Task<IList<Training>> List(string search);
+
+        IEnumerable<Training> DropDownList();
     }
 }
