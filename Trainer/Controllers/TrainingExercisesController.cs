@@ -20,31 +20,21 @@ namespace Trainer.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index(string searchString, int page = 1)
+        public async Task<IActionResult> Index(int? id, string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
-            var results = await _unitOfWork.TrainingExerciseRepository
-                                        .Include(t => t.Exercise)
-                                        .Include(t => t.Training)
-                                            .ThenInclude(t => t.Client)
-                                        .GetPagedAsync(page, 10);
 
+            IEnumerable<TrainingExercise> results = await _unitOfWork.TrainingExerciseRepository.List(searchString);
 
             if (!String.IsNullOrEmpty(searchString))
             {
                 results = results.Where(t => t.Training.Client.FirstName.Contains(searchString)
-                                                            || t.Training.Client.LastName.Contains(searchString));
+                                          || t.Training.Client.LastName.Contains(searchString));
             }
 
             return View(results);
         }
 
-
-        public async Task<PagedResult<TrainingExercise>> IndexApi(int page = 1)
-        {
-            //return await _context.TrainingExercises.GetPagedAsync(page, 10);
-            return await _unitOfWork.TrainingExercises.GetPagedAsync(page, 10);
-        }
 
         // GET: TrainingExercises/Details/5
         public async Task<IActionResult> Details(int? id)

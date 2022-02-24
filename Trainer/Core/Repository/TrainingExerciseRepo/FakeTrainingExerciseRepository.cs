@@ -36,5 +36,10 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
         {
             return _trainingExerciseList.ToList();
         }
+
+        public Task<IList<TrainingExercise>> List(string search)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

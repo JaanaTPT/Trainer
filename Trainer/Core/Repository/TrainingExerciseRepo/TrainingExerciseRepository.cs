@@ -17,12 +17,30 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
             _context = context;
         }
 
+        public async Task<IList<TrainingExercise>> List(string search)
+        {
+            var query = _context.TrainingExercises.Include(s => s.Exercise)
+                                                  .Include(t => t.Training)
+                                                  .ThenInclude(t => t.Client)
+                                                  .Select(s => s);
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(i => i.Training.Client.FirstName.Contains(search) ||
+                                         i.Training.Client.LastName.Contains(search));
+            }
+
+            return await query.ToListAsync();
+        }
+
         DbSet<Exercise> ITrainingExerciseRepository.Exercises { get; set; }
         DbSet<Training> ITrainingExerciseRepository.Trainings { get; set; }
 
         public async Task<TrainingExercise> GetById(int id)
         {
-            return await _context.TrainingExercises.Include(s => s.Exercise).Include(t => t.Training).ThenInclude(t => t.Client).FirstOrDefaultAsync(c => c.ID == id);
+            return await _context.TrainingExercises.Include(s => s.Exercise)
+                                                    .Include(t => t.Training)
+                                                    .ThenInclude(t => t.Client)
+                                                    .FirstOrDefaultAsync(t => t.ID == id);
 
         }
 

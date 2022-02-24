@@ -12,5 +12,7 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
         public DbSet<Exercise> Exercises { get; set; }
 
         public DbSet<Training> Trainings { get; set; }
+
+        Task<IList<TrainingExercise>> List(string search);
     }
 }
