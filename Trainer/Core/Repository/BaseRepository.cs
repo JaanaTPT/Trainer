@@ -43,5 +43,10 @@ namespace Trainer.Core.Repository
         {
             return await _context.Set<T>().ToListAsync();
         }
+
+        public virtual async Task<PagedResult<T>> GetPagedList(int page, int pageSize)
+        {
+            return await _context.Set<T>().GetPagedAsync(page, pageSize);
+        }
     }
 }

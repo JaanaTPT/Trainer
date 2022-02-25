@@ -25,5 +25,12 @@ namespace Trainer.Core.Repository.ClientRepo
            return await _context.Clients.Include(s => s.Trainings).FirstOrDefaultAsync(c => c.ID == id);
            
         }
+
+        public override async Task<PagedResult<Client>> GetPagedList(int page, int pageSize)
+        {
+            var clients = await _context.Clients.Include(s => s.Trainings).GetPagedAsync(page, pageSize);
+
+            return clients;
+        }
     }
 } 

@@ -12,6 +12,7 @@ namespace Trainer.Controllers
     public class ClientsController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private const int pagesize = 5;
 
         public ClientsController(IUnitOfWork unitOfWork)
         {
@@ -19,7 +20,7 @@ namespace Trainer.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int page = 1)
         {
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "lastName_desc" : "";
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";

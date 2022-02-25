@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Trainer.Data;
 using Trainer.Models;
 
 namespace Trainer.Core.Repository.ClientRepo
@@ -35,6 +36,11 @@ namespace Trainer.Core.Repository.ClientRepo
         public IEnumerable<Client> DropDownList()
         {
             return _clientList;
+        }
+
+        public Task<PagedResult<Client>> GetPagedList(int page, int pageSize)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

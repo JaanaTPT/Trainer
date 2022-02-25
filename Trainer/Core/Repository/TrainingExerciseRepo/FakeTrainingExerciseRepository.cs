@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Trainer.Data;
 using Trainer.Models;
 
 namespace Trainer.Core.Repository.TrainingExerciseRepo
@@ -38,6 +39,11 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
         }
 
         public Task<IList<TrainingExercise>> List(string search)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PagedResult<TrainingExercise>> GetPagedList(int page, int pageSize)
         {
             throw new NotImplementedException();
         }
