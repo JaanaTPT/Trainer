@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
+using Trainer.Data;
 using Trainer.Models;
 
 namespace Trainer.Controllers
@@ -25,12 +26,8 @@ namespace Trainer.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "lastName_desc" : "";
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
             ViewData["CurrentFilter"] = searchString;
-            //Ilma paginationita töötab nii:
-            IEnumerable<Client> clients = await _unitOfWork.ClientRepository.List();
 
-            //Kuidas saada pagination tööle? Ma saan aru, et siin on teema andmetüüpides - vaja on saada IEnumerable, aga GetPagedList tagastab Clients
-            //mida teha selleks, et getPagedList tagastaks IEnumerable?
-            IEnumerable<Client> clients = await _unitOfWork.ClientRepository.GetPagedList(page, pagesize);
+            PagedResult<Client> clients = await _unitOfWork.ClientRepository.GetPagedList(page, pagesize);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -49,7 +46,7 @@ namespace Trainer.Controllers
                     clients = clients.OrderBy(s => s.FirstName);
                     break;
             }
-            return View(clients.ToList());
+            return View(clients);
         }
 
         // GET: Clients/Details/5
