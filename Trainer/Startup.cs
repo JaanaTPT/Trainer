@@ -17,6 +17,7 @@ using Trainer.Core.Repository.ClientRepo;
 using Trainer.Core.Repository.TrainingRepo;
 using Trainer.Core.Repository.TrainingExerciseRepo;
 using Trainer.Core.Repository.ExerciseRepo;
+using Trainer.Services;
 
 namespace Trainer
 {
@@ -50,6 +51,7 @@ namespace Trainer
             services.AddScoped<IExerciseRepository, ExerciseRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IClientService, ClientService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

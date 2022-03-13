@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
+using Trainer.Services;
 
 namespace Trainer.Controllers
 {
     public class ClientsController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private const int pagesize = 5;
+        private readonly IClientService _clientService;
+        private const int pagesize = 10;
 
-        public ClientsController(IUnitOfWork unitOfWork)
+        public ClientsController(IClientService clientService)
         {
-            _unitOfWork = unitOfWork;
+            _clientService = clientService;
         }
 
         // GET: Clients
@@ -27,25 +28,25 @@ namespace Trainer.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
             ViewData["CurrentFilter"] = searchString;
 
-            PagedResult<Client> clients = await _unitOfWork.ClientRepository.GetPagedList(page, pagesize);
+            PagedResult<Client> clients = await _clientService.GetPagedList(page, pagesize);
 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                clients = clients.Where(s => s.LastName.ToLower().Contains(searchString.ToLower())
-                                       || s.FirstName.ToLower().Contains(searchString.ToLower()));
-            }
-            switch (sortOrder)
-            {
-                case "lastName_desc":
-                    clients = clients.OrderByDescending(s => s.LastName);
-                    break;
-                case "firstName_desc":
-                    clients = clients.OrderByDescending(s => s.FirstName);
-                    break;
-                default:
-                    clients = clients.OrderBy(s => s.FirstName);
-                    break;
-            }
+            //if (!String.IsNullOrEmpty(searchString))
+            //{
+            //    clients = clients.Where(s => s.LastName.ToLower().Contains(searchString.ToLower())
+            //                           || s.FirstName.ToLower().Contains(searchString.ToLower()));
+            //}
+            //switch (sortOrder)
+            //{
+            //    case "lastName_desc":
+            //        clients = clients.OrderByDescending(s => s.LastName);
+            //        break;
+            //    case "firstName_desc":
+            //        clients = clients.OrderByDescending(s => s.FirstName);
+            //        break;
+            //    default:
+            //        clients = clients.OrderBy(s => s.FirstName);
+            //        break;
+            //}
             return View(clients);
         }
 
@@ -57,7 +58,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var client = await _unitOfWork.ClientRepository
+            var client = await _clientService
                .GetById(id.Value);
 
             if (client == null)
@@ -82,8 +83,7 @@ namespace Trainer.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _unitOfWork.ClientRepository.Save(client);
-                    await _unitOfWork.CommitAsync();
+                    await _clientService.Save(client);
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -104,7 +104,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var client = await _unitOfWork.ClientRepository.GetById(id.Value);
+            var client = await _clientService.GetById(id.Value);
             if (client == null)
             {
                 return NotFound();
@@ -121,7 +121,7 @@ namespace Trainer.Controllers
             {
                 return NotFound();
             }
-            var clientToUpdate = await _unitOfWork.ClientRepository.GetById(id.Value);
+            var clientToUpdate = await _clientService.GetById(id.Value);
             if (await TryUpdateModelAsync<Client>(
                 clientToUpdate,
                 "",
@@ -129,7 +129,7 @@ namespace Trainer.Controllers
             {
                 try
                 {
-                    await _unitOfWork.CommitAsync();
+                    await _clientService.Save(clientToUpdate);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException /* ex */)
@@ -151,7 +151,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var client = await _unitOfWork.ClientRepository.GetById(id.Value);
+            var client = await _clientService.GetById(id.Value);
 
             if (client == null)
             {
@@ -173,7 +173,7 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var client = await _unitOfWork.ClientRepository.GetById(id);
+            var client = await _clientService.GetById(id);
             if (client == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -181,8 +181,7 @@ namespace Trainer.Controllers
 
             try
             {
-                _unitOfWork.ClientRepository.Delete(client);
-                await _unitOfWork.CommitAsync();
+                await _clientService.Delete(client);
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException /* ex */)
@@ -194,7 +193,7 @@ namespace Trainer.Controllers
 
         private bool ClientExists(int id)
         {
-            return _unitOfWork.ClientRepository.GetById(id) != null;
+            return _clientService.GetById(id) != null;
         }
     }
 }
