@@ -28,25 +28,8 @@ namespace Trainer.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
             ViewData["CurrentFilter"] = searchString;
 
-            PagedResult<Client> clients = await _clientService.GetPagedList(page, pagesize);
+            var clients = await _clientService.GetPagedList(page, pagesize, searchString, sortOrder);
 
-            //if (!String.IsNullOrEmpty(searchString))
-            //{
-            //    clients = clients.Where(s => s.LastName.ToLower().Contains(searchString.ToLower())
-            //                           || s.FirstName.ToLower().Contains(searchString.ToLower()));
-            //}
-            //switch (sortOrder)
-            //{
-            //    case "lastName_desc":
-            //        clients = clients.OrderByDescending(s => s.LastName);
-            //        break;
-            //    case "firstName_desc":
-            //        clients = clients.OrderByDescending(s => s.FirstName);
-            //        break;
-            //    default:
-            //        clients = clients.OrderBy(s => s.FirstName);
-            //        break;
-            //}
             return View(clients);
         }
 

@@ -33,9 +33,9 @@ namespace Trainer.Services
             return client;
         }
 
-        public async Task<PagedResult<Client>> GetPagedList(int page, int pageSize)
+        public async Task<PagedResult<Client>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)
         {
-            var clients = await _clientRepository.GetPagedList(page, pageSize);
+            var clients = await _clientRepository.GetPagedList(page, pageSize, searchString, sortOrder);
 
             return clients;
         }

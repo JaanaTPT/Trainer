@@ -28,7 +28,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var page = 1;
             var clients = GetPagedProductList();
-            _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>())).
+            _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => clients);
 
             // Act
@@ -47,7 +47,7 @@ namespace Trainer.UnitTests.ControllerTests
             var defaultViewNames = new[] { null, "Index" };
             var page = 1;
             var clients = GetPagedProductList();
-            _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>()))
+            _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", ""))
                                .ReturnsAsync(() => clients);
 
             // Act
@@ -64,7 +64,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var page = 1;
             var clients = GetPagedProductList();
-            _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>())).
+            _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => clients);
 
             // Act

@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Trainer.Data;
 using Trainer.Models;
 
@@ -20,33 +21,54 @@ namespace Trainer.Core.Repository.ClientRepo
             return  _context.Clients;
         }
 
-        public async Task<Client> GetById(int id)
+        public override async Task<Client> GetById(int id)
         {
-            return await _context.Clients.Include(s => s.Trainings).FirstOrDefaultAsync(c => c.ID == id);       
+            return await _context.Clients
+                                 .Include(s => s.Trainings)
+                                 .FirstOrDefaultAsync(c => c.ID == id);       
         }
 
-        public override async Task<PagedResult<Client>> GetPagedList(int page, int pageSize)
+        public async Task<PagedResult<Client>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)
         {
-            var clients = await _context.Clients.Include(s => s.Trainings).GetPagedAsync(page, pageSize);
+            IQueryable<Client> query = _context.Clients.Include(s => s.Trainings);
 
-            return clients;
-        }
-
-        public async Task Save(Client client)
-        {
-            if (client.ID == 0)
+            if(!string.IsNullOrEmpty(searchString))
             {
-                await _context.Clients.AddAsync(client);
+                query = query.Where(client => client.FirstName.Contains(searchString) ||
+                                              client.LastName.Contains(searchString));       
             }
-            else
+
+            switch (sortOrder)
             {
-                _context.Clients.Update(client);
+                case "lastName_desc":
+                    query = query.OrderByDescending(s => s.LastName);
+                    break;
+                case "firstName_desc":
+                    query = query.OrderByDescending(s => s.FirstName);
+                    break;
+                default:
+                    query = query.OrderBy(s => s.FirstName);
+                    break;
             }
+
+            return await query.GetPagedAsync(page, pageSize);
         }
 
-        public async Task Delete(Client client)
-        {
-            _context.Clients.Remove(client);
-        }
+        //public async Task Save(Client client)
+        //{
+        //    if (client.ID == 0)
+        //    {
+        //        await _context.Clients.AddAsync(client);
+        //    }
+        //    else
+        //    {
+        //        _context.Clients.Update(client);
+        //    }
+        //}
+
+        //public async Task Delete(Client client)
+        //{
+        //    _context.Clients.Remove(client);
+        //}
     }
 } 

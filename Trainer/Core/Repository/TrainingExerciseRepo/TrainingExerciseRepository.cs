@@ -35,7 +35,7 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
         DbSet<Exercise> ITrainingExerciseRepository.Exercises { get; set; }
         DbSet<Training> ITrainingExerciseRepository.Trainings { get; set; }
 
-        public async Task<TrainingExercise> GetById(int id)
+        public override async Task<TrainingExercise> GetById(int id)
         {
             return await _context.TrainingExercises.Include(s => s.Exercise)
                                                     .Include(t => t.Training)
