@@ -27,7 +27,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var page = 1;
-            var clients = GetPagedProductList();
+            var clients = GetPagedClientList();
             _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => clients);
 
@@ -46,7 +46,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var defaultViewNames = new[] { null, "Index" };
             var page = 1;
-            var clients = GetPagedProductList();
+            var clients = GetPagedClientList();
             _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", ""))
                                .ReturnsAsync(() => clients);
 
@@ -63,7 +63,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var page = 1;
-            var clients = GetPagedProductList();
+            var clients = GetPagedClientList();
             _clientServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => clients);
 
@@ -85,7 +85,7 @@ namespace Trainer.UnitTests.ControllerTests
         }
 
         [Fact]
-        public async Task Details_should_return_not_found_if_product_is_null()
+        public async Task Details_should_return_not_found_if_client_is_null()
         {
             // Arrange
             var nonExistentId = -1;
@@ -100,7 +100,7 @@ namespace Trainer.UnitTests.ControllerTests
         }
 
         [Fact]
-        public async Task Details_returns_correct_result_when_product_is_found()
+        public async Task Details_returns_correct_result_when_client_is_found()
         {
             // Arrange
             var model = GetClient();
@@ -148,19 +148,135 @@ namespace Trainer.UnitTests.ControllerTests
         //public async Task Edit_should_save_client_data()
         //{
         //    // Arrange
-        //    var product = GetClientEdit();
+        //    var client = GetClientEdit();
         //    var response = new OperationResponse();
-        //    _clientServiceMock.Setup(ps => ps.Save(product))
+        //    _clientServiceMock.Setup(ps => ps.Save(client))
         //                       .ReturnsAsync(() => response)
         //                       .Verifiable();
 
         //    // Act
-        //    var result = await _clientsController.Edit(product.Id, product) as RedirectToActionResult;
+        //    var result = await _clientsController.Edit(client.Id, client) as RedirectToActionResult;
 
         //    // Assert
         //    Assert.NotNull(result);
         //    _clientServiceMock.VerifyAll();
         //}
+
+        [Fact]
+        public async Task Edit_should_return_notfound_when_ids_does_not_match()
+        {
+            // Arrange
+            var clientIdReal = 1;
+            var clientIdDampered = 2;
+            var client = new Client();
+            client.ID = clientIdDampered;
+
+            // Act
+            var result = await _clientsController.Edit(clientIdReal) as NotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        ////seda saab siis teha, kui OperationResponse on tehtud
+        //[Fact]
+        //public async Task Edit_should_save_client_data()
+        //{
+        //    // Arrange
+        //    var client = GetClientEdit();
+        //    var response = new OperationResponse();
+        //    _clientServiceMock.Setup(ps => ps.Save(client))
+        //                       .ReturnsAsync(() => response)
+        //                       .Verifiable();
+
+        //    // Act
+        //    var result = await _clientsController.Edit(client.ID) as RedirectToActionResult;
+
+        //    // Assert
+        //    Assert.NotNull(result);
+        //    _clientServiceMock.VerifyAll();
+        //}
+
+        [Fact]
+        public async Task Delete_should_return_not_found_if_id_is_null()
+        {
+            // Arrange
+            var clientId = (int?)null;
+
+            // Act
+            var result = await _clientsController.Delete(clientId) as NotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Delete_should_return_not_found_when_client_does_not_exist()
+        {
+            // Arrange
+            var clientId = -100;
+            var client = (Client)null;
+            _clientServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+                               .ReturnsAsync(() => client);
+
+            // Act
+            var result = await _clientsController.Delete(clientId) as NotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Delete_should_show_confirmation_page()
+        {
+            // Arrange
+            var defaultViewNames = new[] { null, "Delete" };
+            var client = GetClient();
+            _clientServiceMock.Setup(ps => ps.GetById(client.ID))
+                               .ReturnsAsync(() => client);
+
+            // Act
+            var result = await _clientsController.Delete(client.ID) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Contains(result.ViewName, defaultViewNames);
+            Assert.Equal(client, result.Model);
+        }
+
+        [Fact]
+        public async Task DeleteConfirmed_should_return_not_found_if_client_is_null()
+        {
+            // Arrange
+            var nonExistentId = -1;
+            _clientServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+                               .ReturnsAsync(() => null);
+
+            // Act
+            var result = await _clientsController.DeleteConfirmed(nonExistentId) as NotFoundResult;
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task DeleteConfirmed_should_delete_client()
+        {
+            // Arrange
+            var client = GetClient();
+            _clientServiceMock.Setup(ps => ps.GetById(client.ID))
+                               .ReturnsAsync(() => client)
+                               .Verifiable();
+            _clientServiceMock.Setup(ps => ps.Delete(client))
+                               .Verifiable();
+
+            // Act
+            var result = await _clientsController.DeleteConfirmed(client.ID) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            _clientServiceMock.VerifyAll();
+        }
 
         private Client GetClient()
         {
@@ -176,7 +292,7 @@ namespace Trainer.UnitTests.ControllerTests
             };
         }
 
-        private PagedResult<Client> GetPagedProductList()
+        private PagedResult<Client> GetPagedClientList()
         {
             return new PagedResult<Client>
             {
