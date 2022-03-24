@@ -18,11 +18,13 @@ using Trainer.Core.Repository.TrainingRepo;
 using Trainer.Core.Repository.TrainingExerciseRepo;
 using Trainer.Core.Repository.ExerciseRepo;
 using Trainer.Services;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Trainer
 {
     public class Startup
     {
+        [ExcludeFromCodeCoverage]
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,6 +37,8 @@ namespace Trainer
         {
             services.AddDbContext<TrainingContext>(options =>
               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddAutoMapper(GetType().Assembly);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

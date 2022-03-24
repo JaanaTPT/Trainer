@@ -9,5 +9,6 @@ namespace Trainer.Core.Repository.ClientRepo
     {
         IEnumerable<Client> DropDownList();
         Task<PagedResult<Client>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null);
+        Task Delete(int id);
     }
 }

@@ -70,5 +70,11 @@ namespace Trainer.Core.Repository.ClientRepo
         //{
         //    _context.Clients.Remove(client);
         //}
+
+        public async Task Delete(int id)
+        {
+            var client = await GetById(id);
+            Delete(client);
+        }
     }
 } 

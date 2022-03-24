@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
+using Trainer.Models.ViewModels;
 using Trainer.Services;
 
 namespace Trainer.Controllers
@@ -14,7 +15,7 @@ namespace Trainer.Controllers
     public class ClientsController : Controller
     {
         private readonly IClientService _clientService;
-        private const int pagesize = 10;
+        private const int pagesize = 5;
 
         public ClientsController(IClientService clientService)
         {
@@ -28,9 +29,14 @@ namespace Trainer.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
             ViewData["CurrentFilter"] = searchString;
 
-            var clients = await _clientService.GetPagedList(page, pagesize, searchString, sortOrder);
+            var model = await _clientService.GetPagedList(page, pagesize, searchString, sortOrder);
 
-            return View(clients);
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View(model);
         }
 
         // GET: Clients/Details/5
@@ -60,7 +66,7 @@ namespace Trainer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,DateOfBirth,Gender,StartWeight,CurrentWeight,Height,AdditionalInfo")] Client client)
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,DateOfBirth,Gender,StartWeight,CurrentWeight,Height,AdditionalInfo")] ClientModel client)
         {
             try
             {
@@ -105,7 +111,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
             var clientToUpdate = await _clientService.GetById(id.Value);
-            if (await TryUpdateModelAsync<Client>(
+            if (await TryUpdateModelAsync<ClientModel>(
                 clientToUpdate,
                 "",
                 c => c.FirstName, c => c.LastName, c => c.DateOfBirth, c => c.Gender, c => c.StartWeight, c => c.CurrentWeight, c => c.Height, c => c.AdditionalInfo))
