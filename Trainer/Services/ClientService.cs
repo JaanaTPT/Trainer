@@ -37,6 +37,19 @@ namespace Trainer.Services
             return _objectMapper.Map<ClientModel>(client);
         }
 
+        public async Task<ClientEditModel> GetForEdit(int id)
+        {
+            var client = await _clientRepository.GetById(id);
+            if (client == null)
+            {
+                return null;
+            }
+
+            var model = _objectMapper.Map<ClientEditModel>(client);
+
+            return model;
+        }
+
         public async Task<PagedResult<ClientModel>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)
         {
             var clients = await _clientRepository.GetPagedList(page, pageSize, searchString, sortOrder);
@@ -49,7 +62,7 @@ namespace Trainer.Services
             return _clientRepository.DropDownList();
         }
 
-        public async Task<OperationResponse> Save(ClientModel model)
+        public async Task<OperationResponse> Save(ClientEditModel model)
         {
             var response = new OperationResponse();
 
@@ -69,7 +82,7 @@ namespace Trainer.Services
                 }
             }
 
-            _objectMapper.Map(model, client);
+            _objectMapper.Map<ClientEditModel>(client);
 
             if (!response.Success)
             {

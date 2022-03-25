@@ -9,6 +9,7 @@ using Trainer.Data;
 using Trainer.Models;
 using Trainer.Models.ViewModels;
 using Trainer.Services;
+using AutoMapper;
 
 namespace Trainer.Controllers
 {
@@ -66,7 +67,7 @@ namespace Trainer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,DateOfBirth,Gender,StartWeight,CurrentWeight,Height,AdditionalInfo")] ClientModel client)
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,DateOfBirth,Gender,StartWeight,CurrentWeight,Height,AdditionalInfo")] ClientEditModel client)
         {
             try
             {
@@ -82,7 +83,21 @@ namespace Trainer.Controllers
                     "Try again, and if the problem persists " +
                     "see your system administrator.");
             }
-            return View(client);
+           return await Save(client);
+        }
+
+        [NonAction]
+        private async Task<IActionResult> Save(ClientEditModel client)
+        {
+            var response = await _clientService.Save(client);
+            if (!response.Success)
+            {
+                AddModelErrors(response);
+
+                return View(client);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Clients/Edit/5
@@ -110,8 +125,8 @@ namespace Trainer.Controllers
             {
                 return NotFound();
             }
-            var clientToUpdate = await _clientService.GetById(id.Value);
-            if (await TryUpdateModelAsync<ClientModel>(
+            var clientToUpdate = await _clientService.GetForEdit(id.Value);
+            if (await TryUpdateModelAsync<ClientEditModel>(
                 clientToUpdate,
                 "",
                 c => c.FirstName, c => c.LastName, c => c.DateOfBirth, c => c.Gender, c => c.StartWeight, c => c.CurrentWeight, c => c.Height, c => c.AdditionalInfo))

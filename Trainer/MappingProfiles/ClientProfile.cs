@@ -17,8 +17,8 @@ namespace Trainer.MappingProfiles
             CreateMap<Client, ClientModel>();
             CreateMap<Client, ClientEditModel>();
 
-            CreateMap<ClientEditModel, Client>()
-              .ForMember(m => m.ID, m => m.Ignore());
+            //CreateMap<ClientEditModel, Client>()
+            //  .ForMember(m => m.ID, m => m.Ignore());
         }
     }
 }

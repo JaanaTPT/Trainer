@@ -54,22 +54,22 @@ namespace Trainer.Core.Repository.ClientRepo
             return await query.GetPagedAsync(page, pageSize);
         }
 
-        //public async Task Save(Client client)
-        //{
-        //    if (client.ID == 0)
-        //    {
-        //        await _context.Clients.AddAsync(client);
-        //    }
-        //    else
-        //    {
-        //        _context.Clients.Update(client);
-        //    }
-        //}
+        public async Task Save(Client client)
+        {
+            if (client.ID == 0)
+            {
+                await _context.Clients.AddAsync(client);
+            }
+            else
+            {
+                _context.Clients.Update(client);
+            }
+        }
 
-        //public async Task Delete(Client client)
-        //{
-        //    _context.Clients.Remove(client);
-        //}
+        public async Task Delete(Client client)
+        {
+            _context.Clients.Remove(client);
+        }
 
         public async Task Delete(int id)
         {
