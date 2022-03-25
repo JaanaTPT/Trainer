@@ -62,27 +62,15 @@ namespace Trainer.Controllers
         // GET: Clients/Create
         public IActionResult Create()
         {
-            return View();
+            var model = new ClientEditModel();
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,DateOfBirth,Gender,StartWeight,CurrentWeight,Height,AdditionalInfo")] ClientEditModel client)
+        public async Task<IActionResult> Create(ClientEditModel client)
         {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    await _clientService.Save(client);
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            catch (DbUpdateException /* ex */)
-            {
-                ModelState.AddModelError("", "Unable to save changes. " +
-                    "Try again, and if the problem persists " +
-                    "see your system administrator.");
-            }
            return await Save(client);
         }
 
@@ -90,12 +78,12 @@ namespace Trainer.Controllers
         private async Task<IActionResult> Save(ClientEditModel client)
         {
             var response = await _clientService.Save(client);
-            if (!response.Success)
-            {
-                AddModelErrors(response);
+            //if (!response.Success)
+            //{
+            //    AddModelErrors(response);
 
-                return View(client);
-            }
+            //    return View(client);
+            //}
 
             return RedirectToAction(nameof(Index));
         }

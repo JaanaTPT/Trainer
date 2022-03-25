@@ -74,7 +74,7 @@ namespace Trainer.Core.Repository.ClientRepo
         public async Task Delete(int id)
         {
             var client = await GetById(id);
-            Delete(client);
+            await Delete(client);
         }
     }
 } 
