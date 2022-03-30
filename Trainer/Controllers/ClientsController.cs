@@ -107,32 +107,27 @@ namespace Trainer.Controllers
         // POST: Clients/Edit/5
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
-        {
-            if (id == null)
+        public async Task<IActionResult> EditPost(ClientEditModel model)
+        {           
+            if(!ModelState.IsValid)
             {
-                return NotFound();
+                return View(model);
             }
-            var clientToUpdate = await _clientService.GetForEdit(id.Value);
-            if (await TryUpdateModelAsync<ClientEditModel>(
-                clientToUpdate,
-                "",
-                c => c.FirstName, c => c.LastName, c => c.DateOfBirth, c => c.Gender, c => c.StartWeight, c => c.CurrentWeight, c => c.Height, c => c.AdditionalInfo))
+
+            try
             {
-                try
-                {
-                    await _clientService.Save(clientToUpdate);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException /* ex */)
-                {
-                    //Log the error (uncomment ex variable name and write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists, " +
-                        "see your system administrator.");
-                }
+                await _clientService.Save(model);
+                return RedirectToAction(nameof(Index));
             }
-            return View(clientToUpdate);
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists, " +
+                    "see your system administrator.");
+            }
+
+            return View(model);
         }
 
         // GET: Clients/Delete/5

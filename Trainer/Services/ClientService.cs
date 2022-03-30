@@ -82,7 +82,7 @@ namespace Trainer.Services
                 }
             }
 
-            _objectMapper.Map<ClientEditModel>(client);
+            _objectMapper.Map(model, client);
 
             if (!response.Success)
             {
