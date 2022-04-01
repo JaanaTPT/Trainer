@@ -9,16 +9,17 @@ using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
 using Trainer.Models.TrainingViewModels;
+using Trainer.Services;
 
 namespace Trainer.Controllers
 {
     public class TrainingsController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITrainingService _trainingService;
 
-        public TrainingsController(IUnitOfWork unitOfWork)
+        public TrainingsController(ITrainingService trainingService)
         {
-            _unitOfWork = unitOfWork;
+            _trainingService = trainingService;
         }
 
         public async Task<IActionResult> Index(int? id, string searchString)
@@ -27,7 +28,7 @@ namespace Trainer.Controllers
 
             var viewModel = new TrainingDetailsData();
 
-            viewModel.Trainings = await _unitOfWork.TrainingRepository.List(searchString);
+            viewModel.Trainings = await _trainingService.List(searchString);
 
             if (id != null)
             {
@@ -52,7 +53,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var training = await _unitOfWork.TrainingRepository
+            var training = await _trainingService
                .GetById(id.Value);
 
             if (training == null)
@@ -66,7 +67,7 @@ namespace Trainer.Controllers
         // GET: Trainings/Create
         public IActionResult Create()
         {
-            ViewData["ClientID"] = new SelectList(_unitOfWork.ClientRepository.DropDownList().OrderBy(c => c.FullName), "ID", "FullName");
+            ViewData["ClientID"] = new SelectList(_trainingService.DropDownList());
             return View();
         }
 
@@ -79,12 +80,12 @@ namespace Trainer.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.TrainingRepository.Save(training);
-                await _unitOfWork.CommitAsync();
+                await _trainingService.Save(training);
+                //await _trainingService.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["ClientID"] = new SelectList(_unitOfWork.TrainingRepository.Clients, "ID", "FullName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_trainingService.DropDownList());
             return View(training);
         }
 
@@ -96,13 +97,13 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var training = await _unitOfWork.TrainingRepository.GetById(id.Value);
+            var training = await _trainingService.GetById(id.Value);
             if (training == null)
             {
                 return NotFound();
             }
 
-            ViewData["ClientID"] = new SelectList(_unitOfWork.ClientRepository.DropDownList().OrderBy(c => c.FullName), "ID", "FullName", training.ClientID);
+            ViewData["ClientID"] = new SelectList(_trainingService.DropDownList());
             return View(training);
         }
 
@@ -116,7 +117,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingToUpdate = await _unitOfWork.TrainingRepository.GetById(id.Value);
+            var trainingToUpdate = await _trainingService.GetById(id.Value);
 
             if (await TryUpdateModelAsync<Training>(
                 trainingToUpdate,
@@ -125,7 +126,7 @@ namespace Trainer.Controllers
             {
                 try
                 {
-                    await _unitOfWork.CommitAsync();
+                    await _trainingService.Save(trainingToUpdate);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException /* ex */)
@@ -137,7 +138,7 @@ namespace Trainer.Controllers
                 }
                
             }
-            return RedirectToAction(nameof(Index));
+            return View(trainingToUpdate);
         }
 
         // GET: Trainings/Delete/5
@@ -148,7 +149,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var training = await _unitOfWork.TrainingRepository.GetById(id.Value);
+            var training = await _trainingService.GetById(id.Value);
 
             if (training == null)
             {
@@ -170,16 +171,15 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var training = await _unitOfWork.TrainingRepository.GetById(id);
+            var training = await _trainingService.GetById(id);
             if (training == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
 
             try
             {
-                _unitOfWork.TrainingRepository.Delete(training);
-                await _unitOfWork.CommitAsync();
+                await _trainingService.Delete(training);
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException /* ex */)
@@ -191,7 +191,7 @@ namespace Trainer.Controllers
 
         private bool TrainingExists(int id)
         {
-            return _unitOfWork.TrainingRepository.GetById(id) != null;
+            return _trainingService.GetById(id) != null;
         }
     }
 }
