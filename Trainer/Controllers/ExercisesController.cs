@@ -8,16 +8,17 @@ using Microsoft.EntityFrameworkCore;
 using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
+using Trainer.Services;
 
 namespace Trainer.Controllers
 {
     public class ExercisesController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IExerciseService _exerciseService;
 
-        public ExercisesController(IUnitOfWork unitOfWork)
+        public ExercisesController(IExerciseService exerciseService)
         {
-            _unitOfWork = unitOfWork;
+            _exerciseService = exerciseService;
         }
 
         // GET: Exercises
@@ -26,7 +27,7 @@ namespace Trainer.Controllers
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["MuscleSortParm"] = sortOrder == "Muscle" ? "muscle_desc" : "Muscle";
             ViewData["CurrentFilter"] = searchString;
-            IEnumerable<Exercise> exercises = await _unitOfWork.ExerciseRepository.List();
+            IEnumerable<Exercise> exercises = await _exerciseService.List();
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -60,7 +61,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var exercise = await _unitOfWork.ExerciseRepository.GetById(id.Value);
+            var exercise = await _exerciseService.GetById(id.Value);
 
             if (exercise == null)
             {
@@ -82,8 +83,8 @@ namespace Trainer.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.ExerciseRepository.Save(exercise);
-                await _unitOfWork.CommitAsync();
+                await _exerciseService.Save(exercise);
+                //await _exerciseService.CommitAsync();
                 return RedirectToAction(nameof(Index));
             }
 
@@ -102,7 +103,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var exercise = await _unitOfWork.ExerciseRepository.GetById(id.Value);
+            var exercise = await _exerciseService.GetById(id.Value);
             if (exercise == null)
             {
                 return NotFound();
@@ -121,7 +122,7 @@ namespace Trainer.Controllers
             {
                 return NotFound();
             }
-            var exerciseToUpdate = await _unitOfWork.ExerciseRepository.GetById(id.Value);
+            var exerciseToUpdate = await _exerciseService.GetById(id.Value);
             if (await TryUpdateModelAsync<Exercise>(
                 exerciseToUpdate,
                 "",
@@ -129,7 +130,7 @@ namespace Trainer.Controllers
             {
                 try
                 {
-                    await _unitOfWork.CommitAsync();
+                    await _exerciseService.Save(exerciseToUpdate);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException /* ex */)
@@ -152,7 +153,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var exercise = await _unitOfWork.ExerciseRepository.GetById(id.Value);
+            var exercise = await _exerciseService.GetById(id.Value);
 
             if (exercise == null)
             {
@@ -167,15 +168,27 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var exercise = await _unitOfWork.ExerciseRepository.GetById(id);
-            _unitOfWork.ExerciseRepository.Delete(exercise);
-            await _unitOfWork.CommitAsync();
-            return RedirectToAction(nameof(Index));
+            var exercise = await _exerciseService.GetById(id);
+            if (exercise == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await _exerciseService.Delete(exercise);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
+            }
         }
 
         private bool ExerciseExists(int id)
         {
-            return _unitOfWork.ExerciseRepository.GetById(id) != null;
+            return _exerciseService.GetById(id) != null;
         }
     }
 }
