@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
+using Trainer.Models.ViewModels;
 using Trainer.Services;
 
 namespace Trainer.Controllers
@@ -15,6 +16,7 @@ namespace Trainer.Controllers
     public class ExercisesController : Controller
     {
         private readonly IExerciseService _exerciseService;
+        private const int pagesize = 10;
 
         public ExercisesController(IExerciseService exerciseService)
         {
@@ -22,35 +24,19 @@ namespace Trainer.Controllers
         }
 
         // GET: Exercises
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int page = 1)
         {
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewData["MuscleSortParm"] = sortOrder == "Muscle" ? "muscle_desc" : "Muscle";
             ViewData["CurrentFilter"] = searchString;
-            IEnumerable<Exercise> exercises = await _exerciseService.List();
+            var model = await _exerciseService.GetPagedList(page, pagesize, searchString, sortOrder);
 
-            if (!String.IsNullOrEmpty(searchString))
+            if (model == null)
             {
-                exercises = exercises.Where(e => e.Title.Contains(searchString));
+                return NotFound();
             }
 
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    exercises = exercises.OrderByDescending(e => e.Title);
-                    break;
-                case "Muscle":
-                    exercises = exercises.OrderBy(e => e.MuscleGroup);
-                    break;
-                case "muscle_desc":
-                    exercises = exercises.OrderByDescending(e => e.MuscleGroup);
-                    break;
-                default:
-                    exercises = exercises.OrderBy(e => e.Title);
-                    break;
-            }
-
-            return View(exercises.ToList());
+            return View(model);
         }
 
         // GET: Exercises/Details/5
@@ -74,25 +60,31 @@ namespace Trainer.Controllers
         // GET: Exercises/Create
         public IActionResult Create()
         {
-            return View();
+            var model = new ExerciseEditModel();
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ExerciseID,Title,MuscleGroup")] Exercise exercise)
+        public async Task<IActionResult> Create(ExerciseEditModel exercise)
         {
-            if (ModelState.IsValid)
-            {
-                await _exerciseService.Save(exercise);
-                //await _exerciseService.CommitAsync();
-                return RedirectToAction(nameof(Index));
-            }
+            return await Save(exercise);
+        }
 
-            //var statuses = from MuscleGroup s in Enum.GetValues(typeof(MuscleGroup))
-            //               select new {Name = s.ToString() };
-            //ViewData["MuscleGroup"] = new SelectList(statuses);
+        [NonAction]
+        private async Task<IActionResult> Save(ExerciseEditModel exercise)
+        {
+            var response = await _exerciseService.Save(exercise);
 
-            return View(exercise);
+            //if (!response.Success)
+            //{
+            //    AddModelErrors(response);
+
+            //    return View(exercise);
+            //}
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Exercises/Edit/5
@@ -116,37 +108,37 @@ namespace Trainer.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id, [Bind("ExerciseID,Title,MuscleGroup")] Exercise exercise)
+        public async Task<IActionResult> EditPost(ExerciseEditModel model)
         {
-            if (id == null)
+            if (model == null)
             {
-                return NotFound();
+                return BadRequest();
             }
-            var exerciseToUpdate = await _exerciseService.GetById(id.Value);
-            if (await TryUpdateModelAsync<Exercise>(
-                exerciseToUpdate,
-                "",
-                e => e.Title, e => e.MuscleGroup))
+
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    await _exerciseService.Save(exerciseToUpdate);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException /* ex */)
-                {
-                    //Log the error (uncomment ex variable name and write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists, " +
-                        "see your system administrator.");
-                }
+                return View(model);
             }
-            return View(exerciseToUpdate);
+
+            try
+            {
+                await _exerciseService.Save(model);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists, " +
+                    "see your system administrator.");
+            }
+
+            return View(model);
         }
 
 
         // GET: Exercises/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
@@ -158,6 +150,13 @@ namespace Trainer.Controllers
             if (exercise == null)
             {
                 return NotFound();
+            }
+
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewData["ErrorMessage"] =
+                    "Delete failed. Try again, and if the problem persists " +
+                    "see your system administrator.";
             }
 
             return View(exercise);

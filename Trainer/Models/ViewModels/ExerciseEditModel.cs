@@ -4,11 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Trainer.Models.ViewModels
 {
-    public enum MuscleGroup
-    {
-        Abdominals, Arms, Back, Chest, Legs, Shoulders
-    }
-
     [ExcludeFromCodeCoverage]
     public class ExerciseEditModel
     {

@@ -107,7 +107,7 @@ namespace Trainer.Services
             var client = await _clientRepository.GetById(model.ID);
             if (client == null)
             {
-                return response.AddError("", "Cannot find product with id " + model.ID);
+                return response.AddError("", "Cannot find client with id " + model.ID);
             }
             await _clientRepository.Delete(model.ID);
             await _unitOfWork.CommitAsync();
