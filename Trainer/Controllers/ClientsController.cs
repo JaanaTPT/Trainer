@@ -108,8 +108,13 @@ namespace Trainer.Controllers
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPost(ClientEditModel model)
-        {           
-            if(!ModelState.IsValid)
+        {
+            if (model == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
@@ -163,7 +168,7 @@ namespace Trainer.Controllers
             var client = await _clientService.GetById(id);
             if (client == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
 
             try

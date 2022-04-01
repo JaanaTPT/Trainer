@@ -26,7 +26,12 @@ namespace Trainer.Controllers
 
         [HttpPost]
         public IActionResult Index(IFormFile[] uploadedFiles)
-        {         
+        {
+            if (uploadedFiles == null)
+            {
+                return BadRequest();
+            }
+
             foreach (var uploadedFile in uploadedFiles)
             {
                 using (var inputStream = uploadedFile.OpenReadStream())

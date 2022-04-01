@@ -7,6 +7,7 @@ using Trainer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using Trainer.Data;
+using Trainer.Models.ViewModels;
 
 namespace Trainer.UnitTests.ControllerTests
 {
@@ -32,12 +33,12 @@ namespace Trainer.UnitTests.ControllerTests
                                ReturnsAsync(() => clients);
 
             // Act
-            var result = await _clientsController.Index("FirstName", "Name", page) as ViewResult;
+            var result = await _clientsController.Index("", "", page) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
             Assert.NotNull(result.Model);
-            Assert.True(result.Model is PagedResult<Client>);
+            Assert.True(result.Model is PagedResult<ClientModel>);
         }
 
         [Fact]
@@ -51,7 +52,7 @@ namespace Trainer.UnitTests.ControllerTests
                                .ReturnsAsync(() => clients);
 
             // Act
-            var result = await _clientsController.Index("FirstName", "Name", page) as ViewResult;
+            var result = await _clientsController.Index("", "", page) as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -68,7 +69,7 @@ namespace Trainer.UnitTests.ControllerTests
                                ReturnsAsync(() => clients);
 
             // Act
-            var result = await _clientsController.Index("FirstName", "Name") as ViewResult;
+            var result = await _clientsController.Index("", "") as ViewResult;
 
             // Assert
             Assert.NotNull(result);
@@ -115,52 +116,26 @@ namespace Trainer.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Contains(result.ViewName, defaultViewNames);
             Assert.NotNull(result.Model);
-            Assert.IsType<Client>(result.Model);
+            Assert.IsType<ClientModel>(result.Model);
         }
 
         [Fact]
-        public async Task Edit_should_stay_on_form_when_model_is_invalid()
+        public async Task Edit_should_save_client_data()
         {
             // Arrange
-            var defaultViewNames = new[] { null, "Edit" };
-            var clientId = 1;
-            var client = new Client();
-            client.ID = clientId;
-            client.FirstName = "012345678901234567890123456789012345678901234567890123456789";
-
-            _clientServiceMock.Setup(s => s.GetById(It.IsAny<int>()))
+            var client = GetClientEdit();
+            var response = new OperationResponse();
+            _clientServiceMock.Setup(ps => ps.Save(client))
+                               .ReturnsAsync(() => response)
                                .Verifiable();
 
             // Act
-            _clientsController.ModelState.AddModelError("Id", "ERROR");
-            var result = await _clientsController.EditPost(clientId);
-            var typedResult = result as ViewResult;
+            var result = await _clientsController.EditPost(client) as RedirectToActionResult;
 
             // Assert
-            Assert.NotNull(typedResult);
-            Assert.Contains(typedResult.ViewName, defaultViewNames);
-            Assert.False(_clientsController.ModelState.IsValid);
+            Assert.NotNull(result);
             _clientServiceMock.VerifyAll();
         }
-
-        ////seda saab siis teha, kui OperationResponse on tehtud
-        //[Fact]
-        //public async Task Edit_should_save_client_data()
-        //{
-        //    // Arrange
-        //    var client = GetClientEdit();
-        //    var response = new OperationResponse();
-        //    _clientServiceMock.Setup(ps => ps.Save(client))
-        //                       .ReturnsAsync(() => response)
-        //                       .Verifiable();
-
-        //    // Act
-        //    var result = await _clientsController.Edit(client.Id, client) as RedirectToActionResult;
-
-        //    // Assert
-        //    Assert.NotNull(result);
-        //    _clientServiceMock.VerifyAll();
-        //}
 
         [Fact]
         public async Task Edit_should_return_notfound_when_ids_does_not_match()
@@ -178,24 +153,18 @@ namespace Trainer.UnitTests.ControllerTests
             Assert.NotNull(result);
         }
 
-        ////seda saab siis teha, kui OperationResponse on tehtud
-        //[Fact]
-        //public async Task Edit_should_save_client_data()
-        //{
-        //    // Arrange
-        //    var client = GetClientEdit();
-        //    var response = new OperationResponse();
-        //    _clientServiceMock.Setup(ps => ps.Save(client))
-        //                       .ReturnsAsync(() => response)
-        //                       .Verifiable();
+        [Fact]
+        public async Task Edit_should_return_badresult_when_model_is_null()
+        {
+            // Arrange
+            var client = (ClientEditModel)null;
 
-        //    // Act
-        //    var result = await _clientsController.Edit(client.ID) as RedirectToActionResult;
+            // Act
+            var result = await _clientsController.EditPost(client) as BadRequestResult;
 
-        //    // Assert
-        //    Assert.NotNull(result);
-        //    _clientServiceMock.VerifyAll();
-        //}
+            // Assert
+            Assert.NotNull(result);
+        }
 
         [Fact]
         public async Task Delete_should_return_not_found_if_id_is_null()
@@ -215,7 +184,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var clientId = -100;
-            var client = (Client)null;
+            var client = (ClientModel)null;
             _clientServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => client);
 
@@ -278,23 +247,23 @@ namespace Trainer.UnitTests.ControllerTests
             _clientServiceMock.VerifyAll();
         }
 
-        private Client GetClient()
+        private ClientModel GetClient()
         {
             return GetClientList()[0];
         }
 
-        private IList<Client> GetClientList()
+        private IList<ClientModel> GetClientList()
         {
-            return new List<Client>
+            return new List<ClientModel>
             {
-                new Client { ID = 1, FirstName = "ClientFirstName1", LastName = "ClientLastName1" },
-                new Client { ID = 2, FirstName = "ClientFirstName2", LastName = "ClientLastName2" }
+                new ClientModel { ID = 1, FirstName = "ClientFirstName1", LastName = "ClientLastName1" },
+                new ClientModel { ID = 2, FirstName = "ClientFirstName2", LastName = "ClientLastName2" }
             };
         }
 
-        private PagedResult<Client> GetPagedClientList()
+        private PagedResult<ClientModel> GetPagedClientList()
         {
-            return new PagedResult<Client>
+            return new PagedResult<ClientModel>
             {
                 CurrentPage = 1,
                 PageCount = 1,
@@ -304,10 +273,10 @@ namespace Trainer.UnitTests.ControllerTests
             };
         }
 
-        private Client GetClientEdit()
+        private ClientEditModel GetClientEdit()
         {
             var model = GetClient();
-            var editModel = new Client();
+            var editModel = new ClientEditModel();
 
             editModel.ID = model.ID;
             editModel.FirstName = model.FirstName;
