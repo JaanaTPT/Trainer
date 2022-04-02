@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Trainer.Models
+namespace Trainer.Models.ViewModels
 {
-    public class TrainingExercise : Entity
+    [ExcludeFromCodeCoverage]
+    public class TrainingExerciseModel
     {
-        //public int TrainingExerciseID { get; set; }
+        public int ID { get; set; }
         public int TrainingID { get; set; }
         public int ExerciseID { get; set; }
         public int Rounds { get; set; }
@@ -16,14 +18,5 @@ namespace Trainer.Models
 
         public Training Training { get; set; }
         public Exercise Exercise { get; set; }
-
-        //public string TrainingInfo
-        //{
-        //    get
-        //    {
-        //        return Training.Date + " " + Training.Client.FullName;
-        //    }
-        //}
-
     }
 }
