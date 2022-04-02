@@ -24,6 +24,7 @@ namespace Trainer.Core.Repository.ExerciseRepo
         public override async Task<Exercise> GetById(int id)
         {
             return await _context.Exercises
+                                 //.Include(c => c.MuscleGroup)
                                  .FirstOrDefaultAsync(c => c.ID == id);
         }
 
