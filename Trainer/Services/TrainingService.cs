@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
+using Trainer.Core.Repository.ClientRepo;
 using Trainer.Core.Repository.TrainingRepo;
 using Trainer.Data;
 using Trainer.Models;
@@ -16,12 +18,14 @@ namespace Trainer.Services
         private readonly IMapper _objectMapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ITrainingRepository _trainingRepository;
+        private readonly IClientRepository _clientRepository;
 
         public TrainingService(IUnitOfWork unitOfWork, IMapper objectMapper)
         {
             _objectMapper = objectMapper;
             _unitOfWork = unitOfWork;
             _trainingRepository = unitOfWork.TrainingRepository;
+            _clientRepository = unitOfWork.ClientRepository;
         }
 
         public IEnumerable<Training> DropDownList()
@@ -77,11 +81,17 @@ namespace Trainer.Services
                 training = await _trainingRepository.GetById(model.ID);
                 if (training == null)
                 {
-                    return response.AddError("", "Cannot find client with id " + model.ID);
+                    return response.AddError("", "Cannot find training with id " + model.ID);
                 }
             }
 
             _objectMapper.Map(model, training);
+
+            training.Client = await _clientRepository.GetById(model.ClientID);
+            if (training.Client == null)
+            {
+                response.AddError("ManufacturerId", "Cannot find manufacturer with id " + model.ID);
+            }
 
             if (!response.Success)
             {
@@ -112,6 +122,21 @@ namespace Trainer.Services
             await _unitOfWork.CommitAsync();
 
             return response;
+        }
+
+        public async Task FillEditModel(TrainingEditModel model)
+        {
+            var clients = await _clientRepository.GetPagedList(1, 100);
+
+            model.Clients = clients.Results
+                                   .OrderBy(m => m.FullName)
+                                   .Select(m => new SelectListItem
+                                   {
+                                      Text = m.FullName,
+                                      Value = m.ID.ToString(),
+                                      Selected = model.ClientID == m.ID
+                                   })
+                                  .ToList();
         }
     }
 }

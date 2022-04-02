@@ -16,5 +16,6 @@ namespace Trainer.Services
         Task<TrainingEditModel> GetForEdit(int id);
         Task<OperationResponse> Save(TrainingEditModel model);
         Task<OperationResponse> Delete(TrainingModel model);
+        Task FillEditModel(TrainingEditModel model);
     }
 }

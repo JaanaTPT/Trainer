@@ -38,12 +38,7 @@
         <tbody>
             @foreach (var item in Model.Results)
             {
-                string selectedRow = "";
-                if (item.ID == (int?)ViewData["TrainingID"])
-                {
-                    selectedRow = "table-success";
-                }
-                <tr class="@selectedRow">
+                <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.ID)
                     </td>
@@ -53,12 +48,6 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Date)
                     </td>
-                    @*<td>
-                            @foreach (var exercise in item.TrainingExercises)
-                            {
-                                @exercise.Exercise.Title <br />
-                            }
-                        </td>*@
 
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

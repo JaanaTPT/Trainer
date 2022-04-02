@@ -61,9 +61,11 @@ namespace Trainer.Controllers
         }
 
         // GET: Trainings/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = new TrainingEditModel();
+
+            await _trainingService.FillEditModel(model);
 
             return View(model);
         }
@@ -81,12 +83,20 @@ namespace Trainer.Controllers
         [NonAction]
         private async Task<IActionResult> Save(TrainingEditModel training)
         {
+            if (!ModelState.IsValid)
+            {
+                await _trainingService.FillEditModel(training);
+
+                return View(training);
+            }
+
             var response = await _trainingService.Save(training);
             //if (!response.Success)
             //{
             //    AddModelErrors(response);
+            //    await _trainingService.FillEditModel(training);
 
-            //    return View(client);
+            //    return View(training);
             //}
 
             return RedirectToAction(nameof(Index));
@@ -100,7 +110,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var training = await _trainingService.GetById(id.Value);
+            var training = await _trainingService.GetForEdit(id.Value);
             if (training == null)
             {
                 return NotFound();
