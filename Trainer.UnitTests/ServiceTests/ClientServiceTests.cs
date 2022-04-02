@@ -1,180 +1,218 @@
-﻿//using Moq;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using Trainer.Core.IConfiguration;
-//using Trainer.Core.Repository.ClientRepo;
-//using Trainer.Data;
-//using Trainer.Models;
-//using Trainer.Services;
-//using Xunit;
+﻿using AutoMapper;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Trainer.Core.IConfiguration;
+using Trainer.Core.Repository.ClientRepo;
+using Trainer.Data;
+using Trainer.Models;
+using Trainer.Models.ViewModels;
+using Trainer.Services;
+using Xunit;
 
-//namespace Trainer.UnitTests.ServiceTests
-//{
-//    public class ClientServiceTests
-//    {
-//        private readonly Mock<IClientRepository> _clientRepositoryMock;
-//        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-//        private readonly ClientService _clientService;
+namespace Trainer.UnitTests.ServiceTests
+{
+    public class ClientServiceTests
+    {
+        private readonly Mock<IClientRepository> _clientRepositoryMock;
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly ClientService _clientService;
 
-//        public ClientServiceTests()
-//        {
-//            _clientRepositoryMock = new Mock<IClientRepository>();
-//            _unitOfWorkMock = new Mock<IUnitOfWork>();
+        public ClientServiceTests()
+        {
+            _clientRepositoryMock = new Mock<IClientRepository>();
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
 
-//            _unitOfWorkMock.SetupGet(uow => uow.ClientRepository)
-//                           .Returns(_clientRepositoryMock.Object);
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddMaps(typeof(Program).Assembly);
+            });
+            var mapper = mapperConfig.CreateMapper();
 
-//            _clientService = new ClientService(_unitOfWorkMock.Object);
-//        }
+            _unitOfWorkMock.SetupGet(uow => uow.ClientRepository)
+                           .Returns(_clientRepositoryMock.Object);
 
-//        [Fact]
-//        public async Task List_returns_paged_list_of_clients()
-//        {
-//            // Arrange
-//            int page = 1;
-//            int pageSize = 10;
-//            _clientRepositoryMock.Setup(pr => pr.GetPagedList(page, pageSize, "", ""))
-//                                  .ReturnsAsync(() => new PagedResult<Client>())
-//                                  .Verifiable();
+            _clientService = new ClientService(_unitOfWorkMock.Object, mapper);
+        }
 
-//            // Act
-//            var result = await _clientService.GetPagedList(page, pageSize, "", "");
+        [Fact]
+        public async Task List_returns_paged_list_of_client_models()
+        {
+            // Arrange
+            int page = 1;
+            int pageSize = 10;
+            _clientRepositoryMock.Setup(pr => pr.GetPagedList(page, pageSize, "", ""))
+                                  .ReturnsAsync(() => new PagedResult<Client>())
+                                  .Verifiable();
 
-//            // Assert
-//            Assert.NotNull(result);
-//            Assert.IsType<PagedResult<Client>>(result);
-//            _clientRepositoryMock.VerifyAll();
-//        }
+            // Act
+            var result = await _clientService.GetPagedList(page, pageSize, "", "");
 
-//        [Fact]
-//        public async Task GetById_should_return_null_if_client_was_not_found()
-//        {
-//            // Arrange
-//            var nonExistentId = -1;
-//            var nullClient = (Client)null;
-//            _clientRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
-//                                  .ReturnsAsync(() => nullClient)
-//                                  .Verifiable();
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<PagedResult<ClientModel>>(result);
+            _clientRepositoryMock.VerifyAll();
+        }
 
-//            // Act
-//            var result = await _clientService.GetById(nonExistentId);
+        [Fact]
+        public async Task GetById_should_return_null_if_client_was_not_found()
+        {
+            // Arrange
+            var nonExistentId = -1;
+            var nullClient = (Client)null;
+            _clientRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+                                  .ReturnsAsync(() => nullClient)
+                                  .Verifiable();
 
-//            // Assert
-//            Assert.Null(result);
-//            _clientRepositoryMock.VerifyAll();
-//        }
+            // Act
+            var result = await _clientService.GetById(nonExistentId);
 
-//        [Fact]
-//        public async Task GetById_should_return_client()
-//        {
-//            // Arrange
-//            var id = 1;
-//            var client = new Client { ID = id };
-//            _clientRepositoryMock.Setup(pr => pr.GetById(id))
-//                                  .ReturnsAsync(() => client)
-//                                  .Verifiable();
+            // Assert
+            Assert.Null(result);
+            _clientRepositoryMock.VerifyAll();
+        }
 
-//            // Act
-//            var result = await _clientService.GetById(id);
+        [Fact]
+        public async Task GetById_should_return_client()
+        {
+            // Arrange
+            var id = 1;
+            var client = new Client { ID = id };
+            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => client)
+                                  .Verifiable();
 
-//            // Assert
-//            Assert.NotNull(result);
-//            Assert.IsType<Client>(result);
-//            _clientRepositoryMock.VerifyAll();
-//        }
+            // Act
+            var result = await _clientService.GetById(id);
 
-//        //[Fact]
-//        //public async Task Save_should_handle_missing_client()
-//        //{
-//        //    // Arrange
-//        //    var id = 1;
-//        //    var client = new Client { ID = id };
-//        //    var nullClient = (Client)null;
-//        //    _clientRepositoryMock.Setup(pr => pr.GetById(id))
-//        //                          .ReturnsAsync(() => nullClient)
-//        //                          .Verifiable();
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<ClientModel>(result);
+            _clientRepositoryMock.VerifyAll();
+        }
 
-//        //    // Act
-//        //    var response = await _clientService.Save(client);
+        [Fact]
+        public async Task Save_should_survive_null_model()
+        {
+            // Arrange
+            var model = (ClientEditModel)null;
 
-//        //    // Assert
-//        //    Assert.NotNull(response);
-//        //    Assert.False(response.Success);
-//        //}
+            // Act
+            var response = await _clientService.Save(model);
 
-//        //[Fact]
-//        //public async Task Save_should_save_valid_client()
-//        //{
-//        //    // Arrange
-//        //    var id = 1;
-//        //    var client = new Client { ID = id };
+            // Assert
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+        }
 
-//        //    _clientRepositoryMock.Setup(pr => pr.GetById(id))
-//        //                          .ReturnsAsync(() => client)
-//        //                          .Verifiable();
-//        //    _clientRepositoryMock.Setup(pr => pr.Save(It.IsAny<Client>()))
-//        //                          .Verifiable();
-//        //    _unitOfWorkMock.Setup(uow => uow.CommitAsync())
-//        //                   .Verifiable();
+        [Fact]
+        public async Task Save_should_handle_missing_client()
+        {
+            //Arrange
+            var id = 1;
+            var client = new ClientEditModel { ID = id };
+            var nullClient = (Client)null;
+            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => nullClient)
+                                  .Verifiable();
 
-//        //    // Act
-//        //    var response = await _clientService.Save(client);
+            //Act
+            var response = await _clientService.Save(client);
 
-//        //    // Assert
-//        //    Assert.NotNull(response);
-//        //    Assert.True(response.Success);
-//        //    _clientRepositoryMock.VerifyAll();
-//        //    _unitOfWorkMock.VerifyAll();
-//        //}
+            //Assert
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+        }
 
+        [Fact]
+        public async Task Save_should_save_valid_client()
+        {
+            // Arrange
+            var id = 1;
+            var client = new Client { ID = id };
+            var clientModel = new ClientEditModel { ID = id };
 
-//        //[Fact]
-//        //public async Task Delete_handles_null_client()
-//        //{
-//        //    // Arrange
-//        //    var id = 1;
-//        //    var productToDelete = (Client)null;
+            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => client)
+                                  .Verifiable();
+            _clientRepositoryMock.Setup(pr => pr.Save(It.IsAny<Client>()))
+                                  .Verifiable();
+            _unitOfWorkMock.Setup(uow => uow.CommitAsync())
+                           .Verifiable();
 
-//        //    _clientRepositoryMock.Setup(pr => pr.GetById(id))
-//        //                          .ReturnsAsync(() => productToDelete)
-//        //                          .Verifiable();
+            // Act
+            var response = await _clientService.Save(clientModel);
 
-//        //    // Act
-//        //    var response = await _clientService.Delete(productToDelete);
+            // Assert
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            _clientRepositoryMock.VerifyAll();
+            _unitOfWorkMock.VerifyAll();
+        }
 
-//        //    // Assert
-//        //    Assert.NotNull(response);
-//        //    Assert.False(response.Success);
-//        //    _clientRepositoryMock.VerifyAll();
-//        //}
+        [Fact]
+        public async Task Delete_should_survive_null_model()
+        {
+            // Arrange
+            var model = (ClientModel)null;
 
-//        //[Fact]
-//        //public async Task Delete_deletes_client()
-//        //{
-//        //    // Arrange
-//        //    var id = 1;
-//        //    var clientToDelete = new Client { ID = id };
+            // Act
+            var response = await _clientService.Delete(model);
 
-//        //    _clientRepositoryMock.Setup(pr => pr.GetById(id))
-//        //                          .ReturnsAsync(() => clientToDelete)
-//        //                          .Verifiable();
-//        //    _clientRepositoryMock.Setup(pr => pr.Delete(clientToDelete))
-//        //                          .Verifiable();
-//        //    _unitOfWorkMock.Setup(uow => uow.CommitAsync())
-//        //                   .Verifiable();
+            // Assert
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+        }
 
-//        //    // Act
-//        //    var response = await _clientService.Delete(clientToDelete);
+        [Fact]
+        public async Task Delete_handles_null_client()
+        {
+            // Arrange
+            var id = 1;
+            var clientModelToDelete = new ClientModel { ID = id };
+            var clientToDelete = (Client)null;
 
-//        //    // Assert
-//        //    Assert.NotNull(response);
-//        //    Assert.True(response.Success);
-//        //    _clientRepositoryMock.VerifyAll();
-//        //    _unitOfWorkMock.VerifyAll();
-//        //}
+            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => clientToDelete)
+                                  .Verifiable();
 
-//    }
-//}
+            // Act
+            var response = await _clientService.Delete(clientModelToDelete);
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            _clientRepositoryMock.VerifyAll();
+        }
+
+        [Fact]
+        public async Task Delete_deletes_client()
+        {
+            // Arrange
+            var id = 1;
+            var clientModelToDelete = new ClientModel { ID = id };
+            var clientToDelete = new Client { ID = id };
+
+            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => clientToDelete)
+                                  .Verifiable();
+            _clientRepositoryMock.Setup(pr => pr.Delete(id))
+                                  .Verifiable();
+            _unitOfWorkMock.Setup(uow => uow.CommitAsync())
+                           .Verifiable();
+
+            // Act
+            var response = await _clientService.Delete(clientModelToDelete);
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.True(response.Success);
+            _clientRepositoryMock.VerifyAll();
+            _unitOfWorkMock.VerifyAll();
+        }
+
+    }
+}
