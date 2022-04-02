@@ -1,4 +1,4 @@
-﻿@model Trainer.Models.TrainingViewModels.TrainingDetailsData
+﻿@model Trainer.Data.PagedResult<Trainer.Models.ViewModels.TrainingModel>
 @{
     ViewData["Title"] = "Trainings";
 }
@@ -19,52 +19,55 @@
     </div>
 </form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Training ID
-            </th>
-            <th>
-                Client
-            </th>
-            <th>
-                Date
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Trainings)
-        {
-            string selectedRow = "";
-            if (item.ID == (int?)ViewData["TrainingID"])
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Training ID
+                </th>
+                <th>
+                    Client
+                </th>
+                <th>
+                    Date
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Results)
             {
-                selectedRow = "table-success";
-            }
-        <tr class="@selectedRow">
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            @*<td>
-            @foreach (var exercise in item.TrainingExercises)
-            {
-                @exercise.Exercise.Title <br />
-            }
-        </td>*@
+                string selectedRow = "";
+                if (item.ID == (int?)ViewData["TrainingID"])
+                {
+                    selectedRow = "table-success";
+                }
+                <tr class="@selectedRow">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    @*<td>
+                            @foreach (var exercise in item.TrainingExercises)
+                            {
+                                @exercise.Exercise.Title <br />
+                            }
+                        </td>*@
 
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    </td>
+                </tr>
             }
         </tbody>
-</table>
+    </table>
+    <vc:pager result="Model" view-name="Default" />
+</div>

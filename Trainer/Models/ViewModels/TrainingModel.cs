@@ -14,7 +14,8 @@ namespace Trainer.Models.ViewModels
         [Display(Name = "Training date")]
         public DateTime Date { get; set; }
         public int ClientID { get; set; }
-        public Client Client { get; set; }
+        public int ClientName { get; set; }
+        //public Client Client { get; set; }
 
         public ICollection<TrainingExercise> TrainingExercises { get; set; }
         public ICollection<Client> Clients { get; set; }

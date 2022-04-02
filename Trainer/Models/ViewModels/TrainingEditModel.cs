@@ -15,6 +15,6 @@ namespace Trainer.Models.ViewModels
         [Display(Name = "Training date")]
         public DateTime Date { get; set; }
         public int ClientID { get; set; }
-        public IList<SelectListItem> Manufacturers { get; set; }
+        public IList<SelectListItem> Clients { get; set; }
     }
 }

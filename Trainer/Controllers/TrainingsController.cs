@@ -9,6 +9,7 @@ using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
 using Trainer.Models.TrainingViewModels;
+using Trainer.Models.ViewModels;
 using Trainer.Services;
 
 namespace Trainer.Controllers
@@ -16,32 +17,27 @@ namespace Trainer.Controllers
     public class TrainingsController : Controller
     {
         private readonly ITrainingService _trainingService;
+        private const int pagesize = 10;
 
         public TrainingsController(ITrainingService trainingService)
         {
             _trainingService = trainingService;
         }
 
-        public async Task<IActionResult> Index(int? id, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int page = 1)
         {
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "date_asc" : "";
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "fullName_asc" : "";
             ViewData["CurrentFilter"] = searchString;
 
-            var viewModel = new TrainingDetailsData();
+            var model = await _trainingService.GetPagedList(page, pagesize, searchString, sortOrder);
 
-            viewModel.Trainings = await _trainingService.List(searchString);
-
-            if (id != null)
+            if (model == null)
             {
-                ViewData["TrainingID"] = id.Value;
-
-                var training = viewModel.Trainings.FirstOrDefault(t => t.ID == id.Value);
-                if(training != null)
-                {
-                    viewModel.Exercises = training.TrainingExercises.Select(te => te.Exercise);
-                }
+                return NotFound();
             }
 
-            return View(viewModel);
+            return View(model);
         }
 
 
@@ -67,8 +63,9 @@ namespace Trainer.Controllers
         // GET: Trainings/Create
         public IActionResult Create()
         {
-            ViewData["ClientID"] = new SelectList(_trainingService.DropDownList());
-            return View();
+            var model = new TrainingEditModel();
+
+            return View(model);
         }
 
         // POST: Trainings/Create
@@ -76,17 +73,23 @@ namespace Trainer.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TrainingID,Date,ClientID")] Training training)
+        public async Task<IActionResult> Create(TrainingEditModel training)
         {
-            if (ModelState.IsValid)
-            {
-                await _trainingService.Save(training);
-                //await _trainingService.CommitAsync();
-                return RedirectToAction(nameof(Index));
-            }
+            return await Save(training);
+        }
 
-            ViewData["ClientID"] = new SelectList(_trainingService.DropDownList());
-            return View(training);
+        [NonAction]
+        private async Task<IActionResult> Save(TrainingEditModel training)
+        {
+            var response = await _trainingService.Save(training);
+            //if (!response.Success)
+            //{
+            //    AddModelErrors(response);
+
+            //    return View(client);
+            //}
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Trainings/Edit/5
@@ -103,42 +106,39 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            ViewData["ClientID"] = new SelectList(_trainingService.DropDownList());
+            //ViewData["ClientID"] = new SelectList(_trainingService.DropDownList());
             return View(training);
         }
 
         // POST: Trainings/Edit/5
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<IActionResult> EditPost(TrainingEditModel model)
         {
-            if (id == 0)
+            if (model == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var trainingToUpdate = await _trainingService.GetById(id.Value);
-
-            if (await TryUpdateModelAsync<Training>(
-                trainingToUpdate,
-                "",
-                t => t.Date, t => t.ClientID));
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    await _trainingService.Save(trainingToUpdate);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException /* ex */)
-                {
-                    //Log the error (uncomment ex variable name and write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists, " +
-                        "see your system administrator.");
-                }
-               
+                return View(model);
             }
-            return View(trainingToUpdate);
+
+            try
+            {
+                await _trainingService.Save(model);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists, " +
+                    "see your system administrator.");
+            }
+
+            return View(model);
         }
 
         // GET: Trainings/Delete/5
