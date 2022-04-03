@@ -58,6 +58,7 @@ namespace Trainer
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IExerciseService, ExerciseService>();
             services.AddScoped<ITrainingService, TrainingService>();
+            services.AddScoped<ITrainingExerciseService, TrainingExerciseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

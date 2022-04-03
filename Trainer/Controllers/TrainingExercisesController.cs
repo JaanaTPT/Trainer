@@ -8,23 +8,30 @@ using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
+using Trainer.Services;
 
 namespace Trainer.Controllers
 {
     public class TrainingExercisesController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITrainingExerciseService _trainingExerciseService;
+        private readonly ITrainingService _trainingService;
+        private readonly IExerciseService _exerciseService;
 
-        public TrainingExercisesController(IUnitOfWork unitOfWork)
+        public TrainingExercisesController(ITrainingExerciseService trainingExerciseService,
+                                           ITrainingService trainingService,
+                                           IExerciseService exerciseService)
         {
-            _unitOfWork = unitOfWork;
+            _trainingExerciseService = trainingExerciseService;
+            _trainingService = trainingService;
+            _exerciseService = exerciseService;
         }
 
         public async Task<IActionResult> Index(int? id, string searchString)
         {
             ViewData["CurrentFilter"] = searchString;
 
-            IEnumerable<TrainingExercise> results = await _unitOfWork.TrainingExerciseRepository.List(searchString);
+            IEnumerable<TrainingExercise> results = await _trainingExerciseService.List(searchString);
 
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -44,7 +51,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExercise = await _unitOfWork.TrainingExerciseRepository
+            var trainingExercise = await _trainingExerciseService
                .GetById(id.Value);
 
             if (trainingExercise == null)
@@ -59,8 +66,8 @@ namespace Trainer.Controllers
         public IActionResult Create()
         {
 
-            ViewData["ExerciseID"] = new SelectList(_unitOfWork.ExerciseRepository.DropDownList().OrderBy(e => e.Title), "ID", "Title");
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingRepository.DropDownList(), "ID", "ID");
+            ViewData["ExerciseID"] = new SelectList(_exerciseService.DropDownList().OrderBy(e => e.Title), "ID", "Title");
+            ViewData["TrainingID"] = new SelectList(_trainingService.DropDownList(), "ID", "ID");
 
             return View();
         }
@@ -74,12 +81,11 @@ namespace Trainer.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.TrainingExerciseRepository.Save(trainingExercise);
-                await _unitOfWork.CommitAsync();
+                await _trainingExerciseService.Save(trainingExercise);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ExerciseID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Exercises, "ID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingExerciseRepository.Trainings, "ID", "ID", trainingExercise.TrainingID);
+            ViewData["ExerciseID"] = new SelectList(_exerciseService.DropDownList(), "ID", "Title", trainingExercise.ExerciseID);
+            ViewData["TrainingID"] = new SelectList(_trainingService.DropDownList(), "ID", "ID", trainingExercise.TrainingID);
             return View(trainingExercise);
         }
 
@@ -91,14 +97,13 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExercise = await _unitOfWork.TrainingExerciseRepository.GetById(id.Value);
+            var trainingExercise = await _trainingExerciseService.GetById(id.Value);
             if (trainingExercise == null)
             {
                 return NotFound();
             }
-            ViewData["ExerciseID"] = new SelectList(_unitOfWork.ExerciseRepository.DropDownList().OrderBy(e => e.Title), "ID", "Title");
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingRepository.DropDownList(), "ID", "ID");
-            ViewData["TrainingID"] = new SelectList(_unitOfWork.TrainingRepository.DropDownList(), "ID", "ID");
+            ViewData["ExerciseID"] = new SelectList(_exerciseService.DropDownList().OrderBy(e => e.Title), "ID", "Title");
+            ViewData["TrainingID"] = new SelectList(_trainingService.DropDownList(), "ID", "ID");
             return View(trainingExercise);
         }
 
@@ -114,7 +119,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExerciseToUpdate = await _unitOfWork.TrainingExerciseRepository.GetById(id.Value);
+            var trainingExerciseToUpdate = await _trainingExerciseService.GetById(id.Value);
 
             if (await TryUpdateModelAsync<TrainingExercise>(
                 trainingExerciseToUpdate,
@@ -123,7 +128,7 @@ namespace Trainer.Controllers
             {
                 try
                 {
-                    await _unitOfWork.CommitAsync();
+                    await _trainingExerciseService.Save(trainingExerciseToUpdate);
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException /* ex */)
@@ -146,7 +151,7 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExercise = await _unitOfWork.TrainingExerciseRepository.GetById(id.Value);
+            var trainingExercise = await _trainingExerciseService.GetById(id.Value);
 
             if (trainingExercise == null)
             {
@@ -161,16 +166,28 @@ namespace Trainer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var trainingExercise = await _unitOfWork.TrainingExerciseRepository.GetById(id);
+            var trainingExercise = await _trainingExerciseService.GetById(id);
 
-            _unitOfWork.TrainingExerciseRepository.Delete(trainingExercise);
-            await _unitOfWork.CommitAsync();
-            return RedirectToAction(nameof(Index));
+            if (trainingExercise == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                await _trainingExerciseService.Delete(trainingExercise);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
+            }
         }
 
         private bool TrainingExerciseExists(int id)
         {
-            return _unitOfWork.TrainingExerciseRepository.GetById(id) != null;
+            return _trainingExerciseService.GetById(id) != null;
         }
     }
 }
