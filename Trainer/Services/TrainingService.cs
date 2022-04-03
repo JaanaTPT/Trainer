@@ -55,6 +55,8 @@ namespace Trainer.Services
 
             var model = _objectMapper.Map<TrainingEditModel>(training);
 
+            await FillEditModel(model);
+
             return model;
         }
 
@@ -90,7 +92,7 @@ namespace Trainer.Services
             training.Client = await _clientRepository.GetById(model.ClientID);
             if (training.Client == null)
             {
-                response.AddError("ManufacturerId", "Cannot find manufacturer with id " + model.ID);
+                response.AddError("ClientID", "Cannot find client with id " + model.ID);
             }
 
             if (!response.Success)
