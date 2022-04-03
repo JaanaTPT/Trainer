@@ -41,7 +41,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Assert
             Assert.NotNull(result);
             Assert.NotNull(result.Model);
-            Assert.True(result.Model is PagedResult<ClientModel>);
+            Assert.True(result.Model is PagedResult<TrainingModel>);
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace Trainer.UnitTests.ControllerTests
             Assert.NotNull(result);
             Assert.Contains(result.ViewName, defaultViewNames);
             Assert.NotNull(result.Model);
-            Assert.IsType<ClientModel>(result.Model);
+            Assert.IsType<TrainingModel>(result.Model);
         }
 
         [Fact]
