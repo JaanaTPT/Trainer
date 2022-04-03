@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -15,8 +17,7 @@ namespace Trainer.Models.ViewModels
         [Display(Name = "Max weight")]
         public int MaxWeight { get; set; }
         public String Comments { get; set; }
-
-        public Training Training { get; set; }
-        public Exercise Exercise { get; set; }
+        public IList<SelectListItem> Trainings { get; set; }
+        public IList<SelectListItem> Exercises { get; set; }
     }
 }

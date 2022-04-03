@@ -1,4 +1,4 @@
-﻿@model Trainer.Models.TrainingExercise
+﻿@model Trainer.Models.ViewModels.TrainingExerciseModel
 
 @{
     ViewData["Title"] = "Delete";
@@ -36,16 +36,16 @@
             @Html.DisplayFor(model => model.Comments)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Training)
+            @Html.DisplayNameFor(model => model.TrainingID)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Training.ID)
+            @Html.DisplayFor(model => model.TrainingID)
         </dd class>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Exercise)
+            @Html.DisplayNameFor(model => model.ExerciseName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Exercise.Title)
+            @Html.DisplayFor(model => model.ExerciseName)
         </dd class>
     </dl>
     

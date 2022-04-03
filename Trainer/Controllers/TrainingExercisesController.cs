@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
 using Trainer.Data;
 using Trainer.Models;
+using Trainer.Models.ViewModels;
 using Trainer.Services;
 
 namespace Trainer.Controllers
@@ -15,31 +16,26 @@ namespace Trainer.Controllers
     public class TrainingExercisesController : Controller
     {
         private readonly ITrainingExerciseService _trainingExerciseService;
-        private readonly ITrainingService _trainingService;
-        private readonly IExerciseService _exerciseService;
+        private const int pagesize = 10;
 
-        public TrainingExercisesController(ITrainingExerciseService trainingExerciseService,
-                                           ITrainingService trainingService,
-                                           IExerciseService exerciseService)
+        public TrainingExercisesController(ITrainingExerciseService trainingExerciseService)
         {
             _trainingExerciseService = trainingExerciseService;
-            _trainingService = trainingService;
-            _exerciseService = exerciseService;
         }
 
-        public async Task<IActionResult> Index(int? id, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int page = 1)
         {
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "date_asc" : "";
             ViewData["CurrentFilter"] = searchString;
 
-            IEnumerable<TrainingExercise> results = await _trainingExerciseService.List(searchString);
+            var model = await _trainingExerciseService.GetPagedList(page, pagesize, searchString, sortOrder);
 
-            if (!String.IsNullOrEmpty(searchString))
+            if (model == null)
             {
-                results = results.Where(t => t.Training.Client.FirstName.Contains(searchString)
-                                          || t.Training.Client.LastName.Contains(searchString));
+                return NotFound();
             }
 
-            return View(results);
+            return View(model);
         }
 
 
@@ -63,13 +59,13 @@ namespace Trainer.Controllers
         }
 
         // GET: TrainingExercises/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var model = new TrainingExerciseEditModel();
 
-            ViewData["ExerciseID"] = new SelectList(_exerciseService.DropDownList().OrderBy(e => e.Title), "ID", "Title");
-            ViewData["TrainingID"] = new SelectList(_trainingService.DropDownList(), "ID", "ID");
+            await _trainingExerciseService.FillEditModel(model);
 
-            return View();
+            return View(model);
         }
 
         // POST: TrainingExercises/Create
@@ -77,16 +73,31 @@ namespace Trainer.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TrainingExerciseID,TrainingID,ExerciseID,Rounds,Repetitions,MaxWeight,Comments")] TrainingExercise trainingExercise)
+        public async Task<IActionResult> Create(TrainingExerciseEditModel trainingExercise)
         {
-            if (ModelState.IsValid)
+            return await Save(trainingExercise);
+        }
+
+        [NonAction]
+        private async Task<IActionResult> Save(TrainingExerciseEditModel trainingExercise)
+        {
+            if (!ModelState.IsValid)
             {
-                await _trainingExerciseService.Save(trainingExercise);
-                return RedirectToAction(nameof(Index));
+                await _trainingExerciseService.FillEditModel(trainingExercise);
+
+                return View(trainingExercise);
             }
-            ViewData["ExerciseID"] = new SelectList(_exerciseService.DropDownList(), "ID", "Title", trainingExercise.ExerciseID);
-            ViewData["TrainingID"] = new SelectList(_trainingService.DropDownList(), "ID", "ID", trainingExercise.TrainingID);
-            return View(trainingExercise);
+
+            var response = await _trainingExerciseService.Save(trainingExercise);
+            //if (!response.Success)
+            //{
+            //    AddModelErrors(response);
+            //    await _trainingService.FillEditModel(training);
+
+            //    return View(training);
+            //}
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: TrainingExercises/Edit/5
@@ -97,54 +108,48 @@ namespace Trainer.Controllers
                 return NotFound();
             }
 
-            var trainingExercise = await _trainingExerciseService.GetById(id.Value);
+            var trainingExercise = await _trainingExerciseService.GetForEdit(id.Value);
             if (trainingExercise == null)
             {
                 return NotFound();
             }
-            ViewData["ExerciseID"] = new SelectList(_exerciseService.DropDownList().OrderBy(e => e.Title), "ID", "Title");
-            ViewData["TrainingID"] = new SelectList(_trainingService.DropDownList(), "ID", "ID");
+            
             return View(trainingExercise);
         }
 
         // POST: TrainingExercises/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id)
+        public async Task<IActionResult> EditPost(TrainingExerciseEditModel model)
         {
-            if (id == 0)
+            if (model == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var trainingExerciseToUpdate = await _trainingExerciseService.GetById(id.Value);
-
-            if (await TryUpdateModelAsync<TrainingExercise>(
-                trainingExerciseToUpdate,
-                "",
-                t => t.TrainingID, t => t.ExerciseID, t => t.Rounds, t => t.Repetitions, t => t.MaxWeight, t => t.Comments));
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    await _trainingExerciseService.Save(trainingExerciseToUpdate);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException /* ex */)
-                {
-                    //Log the error (uncomment ex variable name and write a log.)
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists, " +
-                        "see your system administrator.");
-                }
-                
+                return View(model);
             }
-            return RedirectToAction(nameof(Index));
+
+            try
+            {
+                await _trainingExerciseService.Save(model);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists, " +
+                    "see your system administrator.");
+            }
+
+            return View(model);
         }
 
         // GET: TrainingExercises/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
@@ -156,6 +161,13 @@ namespace Trainer.Controllers
             if (trainingExercise == null)
             {
                 return NotFound();
+            }
+
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ViewData["ErrorMessage"] =
+                    "Delete failed. Try again, and if the problem persists " +
+                    "see your system administrator.";
             }
 
             return View(trainingExercise);

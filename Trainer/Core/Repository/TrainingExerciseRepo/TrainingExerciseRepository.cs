@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,23 +18,34 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
             _context = context;
         }
 
-        public async Task<IList<TrainingExercise>> List(string search)
+        IEnumerable ITrainingExerciseRepository.Trainings { get; set; }
+        IEnumerable ITrainingExerciseRepository.Exercises { get; set; }
+
+        public async Task<PagedResult<TrainingExercise>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)
         {
-            var query = _context.TrainingExercises.Include(s => s.Exercise)
-                                                  .Include(t => t.Training)
-                                                  .ThenInclude(t => t.Client)
-                                                  .Select(s => s);
-            if (!string.IsNullOrEmpty(search))
+            IQueryable<TrainingExercise> query = _context.TrainingExercises
+                                                .Include(t => t.Exercise)
+                                                .Include(s => s.Training)
+                                                .ThenInclude(i => i.Client);
+
+            if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(i => i.Training.Client.FirstName.Contains(search) ||
-                                         i.Training.Client.LastName.Contains(search));
+                query = query.Where(i => i.Training.Client.FirstName.Contains(searchString) ||
+                                         i.Training.Client.LastName.Contains(searchString));
             }
 
-            return await query.ToListAsync();
-        }
+            switch (sortOrder)
+            {
+                case "date_asc":
+                    query = query.OrderBy(s => s.Training.Date);
+                    break;
+                default:
+                    query = query.OrderByDescending(s => s.Training.Date);
+                    break;
+            }
 
-        DbSet<Exercise> ITrainingExerciseRepository.Exercises { get; set; }
-        DbSet<Training> ITrainingExerciseRepository.Trainings { get; set; }
+            return await query.GetPagedAsync(page, pageSize);
+        }
 
         public override async Task<TrainingExercise> GetById(int id)
         {
@@ -41,7 +53,17 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
                                                     .Include(t => t.Training)
                                                     .ThenInclude(t => t.Client)
                                                     .FirstOrDefaultAsync(t => t.ID == id);
+        }
 
+        public async Task Delete(TrainingExercise trainingExercise)
+        {
+            _context.TrainingExercises.Remove(trainingExercise);
+        }
+
+        public async Task Delete(int id)
+        {
+            var trainingExercises = await GetById(id);
+            await Delete(trainingExercises);
         }
 
     }
