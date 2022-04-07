@@ -11,7 +11,8 @@ namespace Trainer.MappingProfiles
         public TrainingProfile()
         {
             CreateMap<PagedResult<Training>, PagedResult<TrainingModel>>();
-            CreateMap<Training, TrainingModel>();
+            CreateMap<Training, TrainingModel>()
+                .ForMember(tm => tm.ClientName, m => m.MapFrom(t => t.Client.FullName));
             CreateMap<Training, TrainingEditModel>();
 
             CreateMap<TrainingEditModel, Training>()
