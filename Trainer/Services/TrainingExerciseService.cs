@@ -52,7 +52,7 @@ namespace Trainer.Services
 
         public async Task<TrainingExerciseEditModel> GetForEdit(int id)
         {
-            var trainingExercise = await _trainingRepository.GetById(id);
+            var trainingExercise = await _trainingExerciseRepository.GetById(id);
             if (trainingExercise == null)
             {
                 return null;

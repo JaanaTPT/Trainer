@@ -11,7 +11,10 @@ namespace Trainer.MappingProfiles
         public TrainingExerciseProfile()
         {
             CreateMap<PagedResult<TrainingExercise>, PagedResult<TrainingExerciseModel>>();
-            CreateMap<TrainingExercise, TrainingExerciseModel>();
+            CreateMap<TrainingExercise, TrainingExerciseModel>()
+                .ForMember(tem => tem.ExerciseName, m => m.MapFrom(e => e.Exercise.Title))
+                .ForMember(tem => tem.ClientName, m => m.MapFrom(e => e.Training.Client.FullName))
+                .ForMember(tem => tem.TrainingDate, m => m.MapFrom(e => e.Training.Date));
             CreateMap<TrainingExercise, TrainingExerciseEditModel>();
 
             CreateMap<TrainingExerciseEditModel, TrainingExercise>()

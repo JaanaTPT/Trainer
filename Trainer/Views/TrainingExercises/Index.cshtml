@@ -43,14 +43,11 @@
                     Repetitions
                 </th>
                 <th>
-                    MaxWeight
+                    Max weight
                 </th>
                 <th>
                     Comments
                 </th>
-                @*<th>
-                        @Html.DisplayNameFor(model => model.Training)
-                    </th>*@
 
                 <th></th>
             </tr>
@@ -63,10 +60,10 @@
                         @Html.DisplayFor(model => item.TrainingID)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TrainingID)
+                        @Html.DisplayFor(modelItem => item.ClientName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ExerciseID)
+                        @Html.DisplayFor(modelItem => item.TrainingDate)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ExerciseName)
@@ -83,9 +80,6 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Comments)
                     </td>
-                    @*<td>
-                            @Html.DisplayFor(modelItem => item.Training.TrainingID)
-                        </td>*@
 
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

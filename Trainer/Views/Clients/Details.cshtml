@@ -87,35 +87,11 @@
                 }
             </table>
         </dd>
-
-        @*<dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Trainings)
-        </dt>
-        <dd class="col-sm-10">
-            <table class="table">
-                <tr>
-                    <th>Column name</th>
-                </tr>
-                @foreach (var item in Model.Trainings)
-                {
-                    @foreach (var item1 in Model.TrainingExercises)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item1.Rounds)
-                            </td>
-                        </tr>
-                    }
-                }
-
-            </table>
-        </dd>*@
-
     </dl>
 </div>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.ID"  class="btn btn-danger">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
 
