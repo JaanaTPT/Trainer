@@ -170,6 +170,28 @@ namespace Trainer.UnitTests.ControllerTests
         }
 
         [Fact]
+        public async Task Edit_should_stay_on_form_when_model_is_invalid()
+        {
+            // Arrange
+            var defaultViewNames = new[] { null, "Edit" };
+            var trainingId = 1;
+            var training = new TrainingEditModel();
+            training.ID = trainingId;
+            training.ClientID = 999999999;
+
+            // Act
+            _trainingsController.ModelState.AddModelError("Id", "ERROR");
+            var result = await _trainingsController.EditPost(training);
+            var typedResult = result as ViewResult;
+
+            // Assert
+            Assert.NotNull(typedResult);
+            Assert.Contains(typedResult.ViewName, defaultViewNames);
+            Assert.False(_trainingsController.ModelState.IsValid);
+            _trainingServiceMock.VerifyAll();
+        }
+
+        [Fact]
         public async Task Delete_should_return_not_found_if_id_is_null()
         {
             // Arrange

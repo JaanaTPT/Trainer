@@ -16,6 +16,7 @@ namespace Trainer.Models.ViewModels
         public int Repetitions { get; set; }
         [Display(Name = "Max weight")]
         public int MaxWeight { get; set; }
+        [StringLength(50)]
         public String Comments { get; set; }
         public IList<SelectListItem> Trainings { get; set; }
         public IList<SelectListItem> Exercises { get; set; }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
+using Trainer.Core.Repository.ClientRepo;
 using Trainer.Core.Repository.TrainingRepo;
 using Trainer.Data;
 using Trainer.Models;
@@ -18,12 +19,14 @@ namespace Trainer.UnitTests.ServiceTests
     public class TrainingServiceTests
     {
         private readonly Mock<ITrainingRepository> _trainingRepositoryMock;
+        private readonly Mock<IClientRepository> _clientRepositoryMock;
         private readonly Mock<IUnitOfWork> _unitOfWorkMock;
         private readonly TrainingService _trainingService;
 
         public TrainingServiceTests()
         {
             _trainingRepositoryMock = new Mock<ITrainingRepository>();
+            _clientRepositoryMock = new Mock<IClientRepository>();
             _unitOfWorkMock = new Mock<IUnitOfWork>();
 
             var mapperConfig = new MapperConfiguration(cfg =>
@@ -34,6 +37,9 @@ namespace Trainer.UnitTests.ServiceTests
 
             _unitOfWorkMock.SetupGet(uow => uow.TrainingRepository)
                            .Returns(_trainingRepositoryMock.Object);
+
+            _unitOfWorkMock.SetupGet(uow => uow.ClientRepository)
+                           .Returns(_clientRepositoryMock.Object);
 
             _trainingService = new TrainingService(_unitOfWorkMock.Object, mapper);
         }
@@ -95,6 +101,47 @@ namespace Trainer.UnitTests.ServiceTests
         }
 
         [Fact]
+        public async Task GetForEdit_should_return_null_if_training_was_not_found()
+        {
+            // Arrange
+            var nonExistentId = -1;
+            var nullTraining = (Training)null;
+            _trainingRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+                                  .ReturnsAsync(() => nullTraining)
+                                  .Verifiable();
+
+            // Act
+            var result = await _trainingService.GetForEdit(nonExistentId);
+
+            // Assert
+            Assert.Null(result);
+            _trainingRepositoryMock.VerifyAll();
+        }
+
+        [Fact]
+        public async Task GetForEdit_should_return_training()
+        {
+            // Arrange
+            var id = 1;
+            var training = new Training { ID = id };
+            var clients = GetClientsPaged();
+            _trainingRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => training)
+                                  .Verifiable();
+            _clientRepositoryMock.Setup(cl => cl.GetPagedList(1, 100, "", ""))
+                                       .ReturnsAsync(() => clients);
+
+            // Act
+            var result = await _trainingService.GetForEdit(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<TrainingEditModel>(result);
+            _trainingRepositoryMock.VerifyAll();
+            _clientRepositoryMock.VerifyAll();
+        }
+
+        [Fact]
         public async Task Save_should_survive_null_model()
         {
             // Arrange
@@ -128,18 +175,48 @@ namespace Trainer.UnitTests.ServiceTests
         }
 
         [Fact]
+        public async Task Save_should_handle_missing_client()
+        {
+            // Arrange
+            var id = 1;
+            var training = new Training { ID = id };
+            var trainingModel = new TrainingEditModel { ID = id, ClientID = id };
+            var client = (Client)null;
+
+            _trainingRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => training)
+                                  .Verifiable();
+            _clientRepositoryMock.Setup(mf => mf.GetById(id))
+                                  .ReturnsAsync(() => client)
+                                  .Verifiable();
+
+            // Act
+            var response = await _trainingService.Save(trainingModel);
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.False(response.Success);
+            _trainingRepositoryMock.VerifyAll();
+            _clientRepositoryMock.VerifyAll();
+        }
+
+        [Fact]
         public async Task Save_should_save_valid_training()
         {
             // Arrange
             var id = 1;
             var training = new Training { ID = id };
-            var trainingModel = new TrainingEditModel { ID = id };
+            var trainingModel = new TrainingEditModel { ID = id, ClientID = id };
+            var client = new Client { ID = id };
 
             _trainingRepositoryMock.Setup(pr => pr.GetById(id))
                                   .ReturnsAsync(() => training)
                                   .Verifiable();
             _trainingRepositoryMock.Setup(pr => pr.Save(It.IsAny<Training>()))
                                   .Verifiable();
+            _clientRepositoryMock.Setup(cl => cl.GetById(id))
+                                 .ReturnsAsync(() => client)
+                                 .Verifiable();
             _unitOfWorkMock.Setup(uow => uow.CommitAsync())
                            .Verifiable();
 
@@ -150,6 +227,7 @@ namespace Trainer.UnitTests.ServiceTests
             Assert.NotNull(response);
             Assert.True(response.Success);
             _trainingRepositoryMock.VerifyAll();
+            _clientRepositoryMock.VerifyAll();
             _unitOfWorkMock.VerifyAll();
         }
 
@@ -212,6 +290,22 @@ namespace Trainer.UnitTests.ServiceTests
             Assert.True(response.Success);
             _trainingRepositoryMock.VerifyAll();
             _unitOfWorkMock.VerifyAll();
+        }
+
+        private PagedResult<Client> GetClientsPaged()
+        {
+            return new PagedResult<Client>
+            {
+                CurrentPage = 1,
+                PageCount = 1,
+                PageSize = 10,
+                Results = new List<Client>
+                {
+                    new Client { ID = 1, FirstName = "Firstname1", LastName = "Lastname1" },
+                    new Client { ID = 2, FirstName = "Firstname2", LastName = "Lastname2" }
+                },
+                RowCount = 2
+            };
         }
     }
 }

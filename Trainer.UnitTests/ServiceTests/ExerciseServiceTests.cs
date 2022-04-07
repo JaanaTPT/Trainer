@@ -95,6 +95,43 @@ namespace Trainer.UnitTests.ServiceTests
         }
 
         [Fact]
+        public async Task GetForEdit_should_return_null_if_exercise_was_not_found()
+        {
+            // Arrange
+            var nonExistentId = -1;
+            var nullExercise = (Exercise)null;
+            _exerciseRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+                                  .ReturnsAsync(() => nullExercise)
+                                  .Verifiable();
+
+            // Act
+            var result = await _exerciseService.GetForEdit(nonExistentId);
+
+            // Assert
+            Assert.Null(result);
+            _exerciseRepositoryMock.VerifyAll();
+        }
+
+        [Fact]
+        public async Task GetForEdit_should_return_exercise()
+        {
+            // Arrange
+            var id = 1;
+            var exercise = new Exercise { ID = id };
+            _exerciseRepositoryMock.Setup(pr => pr.GetById(id))
+                                  .ReturnsAsync(() => exercise)
+                                  .Verifiable();
+
+            // Act
+            var result = await _exerciseService.GetForEdit(id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<ExerciseEditModel>(result);
+            _exerciseRepositoryMock.VerifyAll();
+        }
+
+        [Fact]
         public async Task Save_should_survive_null_model()
         {
             // Arrange

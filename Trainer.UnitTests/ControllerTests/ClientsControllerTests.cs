@@ -138,7 +138,7 @@ namespace Trainer.UnitTests.ControllerTests
         }
 
         [Fact]
-        public async Task Edit_should_return_notfound_when_ids_does_not_match()
+        public async Task Edit_should_return_notfound_when_ids_do_not_match()
         {
             // Arrange
             var clientIdReal = 1;
@@ -164,6 +164,28 @@ namespace Trainer.UnitTests.ControllerTests
 
             // Assert
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task Edit_should_stay_on_form_when_model_is_invalid()
+        {
+            // Arrange
+            var defaultViewNames = new[] { null, "Edit" };
+            var clientId = 1;
+            var client = new ClientEditModel();
+            client.ID = clientId;
+            client.FirstName = "012345678901234567890123456789012345678901234567890123456789";
+
+            // Act
+            _clientsController.ModelState.AddModelError("Id", "ERROR");
+            var result = await _clientsController.EditPost(client);
+            var typedResult = result as ViewResult;
+
+            // Assert
+            Assert.NotNull(typedResult);
+            Assert.Contains(typedResult.ViewName, defaultViewNames);
+            Assert.False(_clientsController.ModelState.IsValid);
+            _clientServiceMock.VerifyAll();
         }
 
         [Fact]
