@@ -135,9 +135,9 @@ namespace Trainer.UnitTests.ServiceTests
             _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
                                   .ReturnsAsync(() => trainingExercise)
                                   .Verifiable();
-            _exerciseRepositoryMock.Setup(cl => cl.GetPagedList(1, 100, "", ""))
+            _exerciseRepositoryMock.Setup(cl => cl.GetPagedList(1, 100, It.IsAny<string>(), It.IsAny<string>()))
                                        .ReturnsAsync(() => exercises);
-            _trainingRepositoryMock.Setup(cl => cl.GetPagedList(1, 100, "", ""))
+            _trainingRepositoryMock.Setup(cl => cl.GetPagedList(1, 100, It.IsAny<string>(), It.IsAny<string>()))
                                        .ReturnsAsync(() => trainings);
 
             // Act
