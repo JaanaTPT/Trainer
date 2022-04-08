@@ -340,4 +340,3 @@ ASALocalRun/
 healthchecksdb
 /Trainer.UnitTests/BuildReports/Coverage
 /Trainer.UnitTests/BuildReports/UnitTests
-/Trainer.UnitTests/tools/.store/dotnet-reportgenerator-globaltool/5.1.4
