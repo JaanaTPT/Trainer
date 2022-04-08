@@ -41,6 +41,12 @@ namespace Trainer.UnitTests.ServiceTests
             _unitOfWorkMock.SetupGet(uow => uow.TrainingExerciseRepository)
                            .Returns(_trainingExerciseRepositoryMock.Object);
 
+            _unitOfWorkMock.SetupGet(uow => uow.ExerciseRepository)
+                         .Returns(_exerciseRepositoryMock.Object);
+
+            _unitOfWorkMock.SetupGet(uow => uow.TrainingRepository)
+                         .Returns(_trainingRepositoryMock.Object);
+
             _trainingExerciseService = new TrainingExerciseService(_unitOfWorkMock.Object, mapper);
         }
 
@@ -352,7 +358,7 @@ namespace Trainer.UnitTests.ServiceTests
                 PageSize = 10,
                 Results = new List<Training>
                 {
-                    new Training { ID = 1, Date=DateTime.Parse("2021-08-02") },
+                    new Training { ID = 1, Date=DateTime.Parse("2021-08-02")},
                     new Training { ID = 2, Date=DateTime.Parse("2021-08-02") }
                 },
                 RowCount = 2
