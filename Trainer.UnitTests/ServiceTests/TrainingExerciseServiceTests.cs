@@ -145,7 +145,7 @@ namespace Trainer.UnitTests.ServiceTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<TrainingEditModel>(result);
+            Assert.IsType<TrainingExerciseEditModel>(result);
             _trainingExerciseRepositoryMock.VerifyAll();
             _exerciseRepositoryMock.VerifyAll();
             _trainingRepositoryMock.VerifyAll();
@@ -216,7 +216,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var id = 1;
             var trainingExercise = new TrainingExercise { ID = id };
-            var trainingExerciseModel = new TrainingExerciseEditModel { ID = id, ExerciseID = id };
+            var trainingExerciseModel = new TrainingExerciseEditModel { ID = id, TrainingID = id };
             var training = (Training)null;
 
             _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))

@@ -96,7 +96,7 @@ namespace Trainer.Services
             trainingExercise.Exercise = await _exerciseRepository.GetById(model.ExerciseID);
             if (trainingExercise.Exercise == null)
             {
-                response.AddError("TrainingID", "Cannot find exercise with id " + model.ID);
+                response.AddError("ExerciseID", "Cannot find exercise with id " + model.ID);
             }
 
             if (!response.Success)
