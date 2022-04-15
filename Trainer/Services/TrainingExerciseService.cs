@@ -136,10 +136,10 @@ namespace Trainer.Services
             var exercises = await _exerciseRepository.GetPagedList(1, 100);
 
             model.Trainings = trainings.Results
-                                   .OrderBy(m => m.Date)
+                                   .OrderByDescending(m => m.Date)
                                    .Select(m => new SelectListItem
                                    {
-                                       Text = m.Date.ToString(),
+                                       Text = m.Client.FullName.ToString() + " " + m.Date.ToShortDateString(),
                                        Value = m.ID.ToString(),
                                        Selected = model.TrainingID == m.ID
                                    })
