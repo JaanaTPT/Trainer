@@ -6,7 +6,7 @@
 <h1>Trainings</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Create new training</a>
 </p>
 
 <form asp-action="Index" method="get">
@@ -24,9 +24,6 @@
         <thead>
             <tr>
                 <th>
-                    Training ID
-                </th>
-                <th>
                     Client
                 </th>
                 <th>
@@ -39,9 +36,6 @@
             @foreach (var item in Model.Results)
             {
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ID)
-                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ClientName)
                     </td>

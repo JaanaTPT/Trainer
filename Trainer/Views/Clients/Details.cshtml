@@ -23,6 +23,12 @@
             @Html.DisplayFor(model => model.LastName)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Age)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Age)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DateOfBirth)
         </dt>
         <dd class="col-sm-10">
@@ -38,19 +44,25 @@
             @Html.DisplayNameFor(model => model.StartWeight)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StartWeight)
+            @Html.DisplayFor(model => model.StartWeight) kg
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CurrentWeight)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CurrentWeight)
+            @Html.DisplayFor(model => model.CurrentWeight) kg
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.WeightChange)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.WeightChange) kg
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Height)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Height)
+            @Html.DisplayFor(model => model.Height) cm
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AdditionalInfo)

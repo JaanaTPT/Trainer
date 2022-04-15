@@ -37,7 +37,27 @@ namespace Trainer.Models.ViewModels
                 return FirstName + " " + LastName;
             }
         }
+        [Display(Name = "Weight change")]
+        public int WeightChange
+        {
+            get
+            {
+                return CurrentWeight - StartWeight;
+            }
+        }
 
+        public int Age
+        {
+            get
+            {
+                var today = DateTime.Today;
+                var age = today.Year - DateOfBirth.Year;
+
+                if (today.Month < DateOfBirth.Month || (today.Month == DateOfBirth.Month && today.Day < DateOfBirth.Day))
+                    age--;
+                return age;
+            }
+        }
 
         public ICollection<Training> Trainings { get; set; }
         public ICollection<TrainingExercise> TrainingExercises { get; set; }
