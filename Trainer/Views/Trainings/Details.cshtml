@@ -22,7 +22,54 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ClientName)
         </dd>
-
+        <dt class="col-sm-2">
+           Exercises done
+        </dt>
+        <dd class="col-sm-10">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Exercise name
+                        </th>
+                        <th>
+                            Rounds
+                        </th>
+                        <th>
+                            Repetitions
+                        </th>
+                        <th>
+                            Max weight
+                        </th>
+                        <th>
+                            Comments
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TrainingExercises)
+                    {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Exercise.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Rounds)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Repetitions)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaxWeight)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Comments)
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </dd>
     </dl>
 </div>
 <div>
