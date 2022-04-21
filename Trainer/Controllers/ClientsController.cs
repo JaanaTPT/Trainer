@@ -1,19 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Trainer.Core.IConfiguration;
-using Trainer.Data;
-using Trainer.Models;
 using Trainer.Models.ViewModels;
 using Trainer.Services;
-using AutoMapper;
 
 namespace Trainer.Controllers
 {
-    public class ClientsController : Controller
+    public class ClientsController : BaseController
     {
         private readonly IClientService _clientService;
         private const int pagesize = 5;
@@ -78,12 +72,11 @@ namespace Trainer.Controllers
         private async Task<IActionResult> Save(ClientEditModel client)
         {
             var response = await _clientService.Save(client);
-            //if (!response.Success)
-            //{
-            //    AddModelErrors(response);
-
-            //    return View(client);
-            //}
+            if (!response.Success)
+            {
+                AddModelErrors(response);
+                return View(client);
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -126,7 +119,6 @@ namespace Trainer.Controllers
             }
             catch (DbUpdateException /* ex */)
             {
-                //Log the error (uncomment ex variable name and write a log.)
                 ModelState.AddModelError("", "Unable to save changes. " +
                     "Try again, and if the problem persists, " +
                     "see your system administrator.");
@@ -178,7 +170,6 @@ namespace Trainer.Controllers
             }
             catch (DbUpdateException /* ex */)
             {
-                //Log the error (uncomment ex variable name and write a log.)
                 return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
             }
         }

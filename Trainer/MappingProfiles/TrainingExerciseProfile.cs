@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using System.Collections.Generic;
 using Trainer.Data;
 using Trainer.Models;
 using Trainer.Models.ViewModels;
@@ -12,15 +11,15 @@ namespace Trainer.MappingProfiles
         {
             CreateMap<PagedResult<TrainingExercise>, PagedResult<TrainingExerciseModel>>();
             CreateMap<TrainingExercise, TrainingExerciseModel>()
-                .ForMember(tem => tem.ExerciseName, m => m.MapFrom(e => e.Exercise.Title))
-                .ForMember(tem => tem.ClientName, m => m.MapFrom(e => e.Training.Client.FullName))
-                .ForMember(tem => tem.TrainingDate, m => m.MapFrom(e => e.Training.Date));
+                .ForMember(tem => tem.ExerciseName, tem => tem.MapFrom(te => te.Exercise.Title))
+                .ForMember(tem => tem.ClientName, tem => tem.MapFrom(te => te.Training.Client.FullName))
+                .ForMember(tem => tem.TrainingDate, tem => tem.MapFrom(te => te.Training.Date));
             CreateMap<TrainingExercise, TrainingExerciseEditModel>();
 
             CreateMap<TrainingExerciseEditModel, TrainingExercise>()
-              .ForMember(m => m.ID, m => m.Ignore())
-              .ForMember(m => m.Training, m => m.Ignore())
-              .ForMember(m => m.Exercise, m => m.Ignore());
+              .ForMember(te => te.ID, te => te.Ignore())
+              .ForMember(te => te.Training, te => te.Ignore())
+              .ForMember(te => te.Exercise, te => te.Ignore());
         }
     }
 }

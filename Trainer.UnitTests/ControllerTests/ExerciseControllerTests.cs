@@ -1,16 +1,13 @@
-﻿using Moq;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Moq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Trainer.Services;
 using Trainer.Controllers;
-using Xunit;
-using Microsoft.AspNetCore.Mvc;
 using Trainer.Data;
-using Trainer.Models.ViewModels;
 using Trainer.Models;
+using Trainer.Models.ViewModels;
+using Trainer.Services;
+using Xunit;
 
 namespace Trainer.UnitTests.ControllerTests
 {
@@ -31,7 +28,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var page = 1;
             var exercises = GetPagedExerciseList();
-            _exerciseServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
+            _exerciseServiceMock.Setup(es => es.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => exercises);
 
             // Act
@@ -50,7 +47,7 @@ namespace Trainer.UnitTests.ControllerTests
             var defaultViewNames = new[] { null, "Index" };
             var page = 1;
             var exercises = GetPagedExerciseList();
-            _exerciseServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", ""))
+            _exerciseServiceMock.Setup(es => es.GetPagedList(page, It.IsAny<int>(), "", ""))
                                .ReturnsAsync(() => exercises);
 
             // Act
@@ -67,7 +64,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var page = 1;
             var exercises = GetPagedExerciseList();
-            _exerciseServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
+            _exerciseServiceMock.Setup(es => es.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => exercises);
 
             // Act
@@ -92,7 +89,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var nonExistentId = -1;
-            _exerciseServiceMock.Setup(cs => cs.GetById(It.IsAny<int>()))
+            _exerciseServiceMock.Setup(es => es.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => null);
 
             // Act
@@ -108,7 +105,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var model = GetExercise();
             var defaultViewNames = new[] { null, "Details" };
-            _exerciseServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _exerciseServiceMock.Setup(es => es.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => model);
 
             // Act
@@ -127,7 +124,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var exercise = GetExerciseEdit();
             var response = new OperationResponse();
-            _exerciseServiceMock.Setup(ps => ps.Save(exercise))
+            _exerciseServiceMock.Setup(es => es.Save(exercise))
                                .ReturnsAsync(() => response)
                                .Verifiable();
 
@@ -209,7 +206,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var exerciseId = -100;
             var exercise = (ExerciseModel)null;
-            _exerciseServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _exerciseServiceMock.Setup(es => es.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => exercise);
 
             // Act
@@ -225,7 +222,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var defaultViewNames = new[] { null, "Delete" };
             var exercise = GetExercise();
-            _exerciseServiceMock.Setup(ps => ps.GetById(exercise.ID))
+            _exerciseServiceMock.Setup(es => es.GetById(exercise.ID))
                                .ReturnsAsync(() => exercise);
 
             // Act
@@ -242,7 +239,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var nonExistentId = -1;
-            _exerciseServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _exerciseServiceMock.Setup(es => es.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => null);
 
             // Act
@@ -257,10 +254,10 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var exercise = GetExercise();
-            _exerciseServiceMock.Setup(ps => ps.GetById(exercise.ID))
+            _exerciseServiceMock.Setup(es => es.GetById(exercise.ID))
                                .ReturnsAsync(() => exercise)
                                .Verifiable();
-            _exerciseServiceMock.Setup(ps => ps.Delete(exercise))
+            _exerciseServiceMock.Setup(es => es.Delete(exercise))
                                .Verifiable();
 
             // Act

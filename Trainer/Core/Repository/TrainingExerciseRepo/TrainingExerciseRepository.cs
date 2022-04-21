@@ -24,23 +24,23 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
         public async Task<PagedResult<TrainingExercise>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)
         {
             IQueryable<TrainingExercise> query = _context.TrainingExercises
-                                                .Include(t => t.Exercise)
-                                                .Include(s => s.Training)
-                                                .ThenInclude(i => i.Client);
+                                                .Include(te => te.Exercise)
+                                                .Include(te => te.Training)
+                                                .ThenInclude(t => t.Client);
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(i => i.Training.Client.FirstName.Contains(searchString) ||
-                                         i.Training.Client.LastName.Contains(searchString));
+                query = query.Where(te => te.Training.Client.FirstName.Contains(searchString) ||
+                                         te.Training.Client.LastName.Contains(searchString));
             }
 
             switch (sortOrder)
             {
                 case "date_asc":
-                    query = query.OrderBy(s => s.Training.Date);
+                    query = query.OrderBy(te => te.Training.Date);
                     break;
                 default:
-                    query = query.OrderByDescending(s => s.Training.Date);
+                    query = query.OrderByDescending(te => te.Training.Date);
                     break;
             }
 
@@ -49,10 +49,10 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
 
         public override async Task<TrainingExercise> GetById(int id)
         {
-            return await _context.TrainingExercises.Include(s => s.Exercise)
-                                                    .Include(t => t.Training)
+            return await _context.TrainingExercises.Include(te => te.Exercise)
+                                                    .Include(te => te.Training)
                                                     .ThenInclude(t => t.Client)
-                                                    .FirstOrDefaultAsync(t => t.ID == id);
+                                                    .FirstOrDefaultAsync(te => te.ID == id);
         }
 
         public async Task Delete(TrainingExercise trainingExercise)

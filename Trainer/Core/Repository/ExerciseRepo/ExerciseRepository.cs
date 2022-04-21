@@ -24,8 +24,7 @@ namespace Trainer.Core.Repository.ExerciseRepo
         public override async Task<Exercise> GetById(int id)
         {
             return await _context.Exercises
-                                 //.Include(c => c.MuscleGroup)
-                                 .FirstOrDefaultAsync(c => c.ID == id);
+                                 .FirstOrDefaultAsync(e => e.ID == id);
         }
 
         public async Task<PagedResult<Exercise>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)

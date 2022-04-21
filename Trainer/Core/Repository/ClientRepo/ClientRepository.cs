@@ -24,13 +24,13 @@ namespace Trainer.Core.Repository.ClientRepo
         public override async Task<Client> GetById(int id)
         {
             return await _context.Clients
-                                 .Include(s => s.Trainings)
+                                 .Include(c => c.Trainings)
                                  .FirstOrDefaultAsync(c => c.ID == id);       
         }
 
         public async Task<PagedResult<Client>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)
         {
-            IQueryable<Client> query = _context.Clients.Include(s => s.Trainings);
+            IQueryable<Client> query = _context.Clients.Include(c => c.Trainings);
 
             if(!string.IsNullOrEmpty(searchString))
             {
@@ -41,13 +41,13 @@ namespace Trainer.Core.Repository.ClientRepo
             switch (sortOrder)
             {
                 case "lastName_desc":
-                    query = query.OrderByDescending(s => s.LastName);
+                    query = query.OrderByDescending(c => c.LastName);
                     break;
                 case "firstName_desc":
-                    query = query.OrderByDescending(s => s.FirstName);
+                    query = query.OrderByDescending(c => c.FirstName);
                     break;
                 default:
-                    query = query.OrderBy(s => s.FirstName);
+                    query = query.OrderBy(c => c.FirstName);
                     break;
             }
 

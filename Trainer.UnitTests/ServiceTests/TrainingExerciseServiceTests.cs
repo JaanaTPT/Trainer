@@ -2,8 +2,6 @@
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
 using Trainer.Core.Repository.ExerciseRepo;
@@ -56,7 +54,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             int page = 1;
             int pageSize = 10;
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetPagedList(page, pageSize, "", ""))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetPagedList(page, pageSize, "", ""))
                                   .ReturnsAsync(() => new PagedResult<TrainingExercise>())
                                   .Verifiable();
 
@@ -75,7 +73,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var nonExistentId = -1;
             var nullTrainingExercise = (TrainingExercise)null;
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(nonExistentId))
                                   .ReturnsAsync(() => nullTrainingExercise)
                                   .Verifiable();
 
@@ -93,7 +91,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var id = 1;
             var trainingExercise = new TrainingExercise { ID = id };
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => trainingExercise)
                                   .Verifiable();
 
@@ -112,7 +110,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var nonExistentId = -1;
             var nullTrainingExercise = (TrainingExercise)null;
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(nonExistentId))
                                   .ReturnsAsync(() => nullTrainingExercise)
                                   .Verifiable();
 
@@ -132,12 +130,12 @@ namespace Trainer.UnitTests.ServiceTests
             var trainingExercise = new TrainingExercise { ID = id };
             var exercises = GetExercisesPaged();
             var trainings = GetTrainingsPaged();
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => trainingExercise)
                                   .Verifiable();
-            _exerciseRepositoryMock.Setup(cl => cl.GetPagedList(1, 100, It.IsAny<string>(), It.IsAny<string>()))
+            _exerciseRepositoryMock.Setup(er => er.GetPagedList(1, 100, It.IsAny<string>(), It.IsAny<string>()))
                                        .ReturnsAsync(() => exercises);
-            _trainingRepositoryMock.Setup(cl => cl.GetPagedList(1, 100, It.IsAny<string>(), It.IsAny<string>()))
+            _trainingRepositoryMock.Setup(tr => tr.GetPagedList(1, 100, It.IsAny<string>(), It.IsAny<string>()))
                                        .ReturnsAsync(() => trainings);
 
             // Act
@@ -172,7 +170,7 @@ namespace Trainer.UnitTests.ServiceTests
             var id = 1;
             var trainingExercise = new TrainingExerciseEditModel { ID = id };
             var nullTrainingExercise = (TrainingExercise)null;
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => nullTrainingExercise)
                                   .Verifiable();
 
@@ -193,10 +191,10 @@ namespace Trainer.UnitTests.ServiceTests
             var trainingExerciseModel = new TrainingExerciseEditModel { ID = id, ExerciseID = id };
             var exercise = (Exercise)null;
 
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => trainingExercise)
                                   .Verifiable();
-            _exerciseRepositoryMock.Setup(mf => mf.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                   .ReturnsAsync(() => exercise)
                                   .Verifiable();
 
@@ -219,10 +217,10 @@ namespace Trainer.UnitTests.ServiceTests
             var trainingExerciseModel = new TrainingExerciseEditModel { ID = id, TrainingID = id };
             var training = (Training)null;
 
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => trainingExercise)
                                   .Verifiable();
-            _trainingRepositoryMock.Setup(mf => mf.GetById(id))
+            _trainingRepositoryMock.Setup(tr => tr.GetById(id))
                                   .ReturnsAsync(() => training)
                                   .Verifiable();
 
@@ -246,15 +244,15 @@ namespace Trainer.UnitTests.ServiceTests
             var exercise = new Exercise { ID = id };
             var training = new Training { ID = id };
 
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => trainingExercise)
                                   .Verifiable();
-            _trainingExerciseRepositoryMock.Setup(pr => pr.Save(It.IsAny<TrainingExercise>()))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.Save(It.IsAny<TrainingExercise>()))
                                   .Verifiable();
-            _exerciseRepositoryMock.Setup(cl => cl.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                 .ReturnsAsync(() => exercise)
                                 .Verifiable();
-            _trainingRepositoryMock.Setup(cl => cl.GetById(id))
+            _trainingRepositoryMock.Setup(tr => tr.GetById(id))
                                 .ReturnsAsync(() => training)
                                 .Verifiable();
             _unitOfWorkMock.Setup(uow => uow.CommitAsync())
@@ -294,7 +292,7 @@ namespace Trainer.UnitTests.ServiceTests
             var trainingExerciseModelToDelete = new TrainingExerciseModel { ID = id };
             var trainingExerciseToDelete = (TrainingExercise)null;
 
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => trainingExerciseToDelete)
                                   .Verifiable();
 
@@ -315,10 +313,10 @@ namespace Trainer.UnitTests.ServiceTests
             var trainingExerciseModelToDelete = new TrainingExerciseModel { ID = id };
             var trainingExerciseToDelete = new TrainingExercise { ID = id };
 
-            _trainingExerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.GetById(id))
                                   .ReturnsAsync(() => trainingExerciseToDelete)
                                   .Verifiable();
-            _trainingExerciseRepositoryMock.Setup(pr => pr.Delete(id))
+            _trainingExerciseRepositoryMock.Setup(ter => ter.Delete(id))
                                   .Verifiable();
             _unitOfWorkMock.Setup(uow => uow.CommitAsync())
                            .Verifiable();
@@ -358,8 +356,8 @@ namespace Trainer.UnitTests.ServiceTests
                 PageSize = 10,
                 Results = new List<Training>
                 {
-                    new Training { ID = 1, Date=DateTime.Parse("2021-08-02")},
-                    new Training { ID = 2, Date=DateTime.Parse("2021-08-02") }
+                    new Training { ID = 1, Date=DateTime.Parse("2021-08-02"), Client = new Client{FirstName="Denise",LastName="Ellison"}},
+                    new Training { ID = 2, Date=DateTime.Parse("2021-08-03"), Client = new Client{FirstName="Mark",LastName="Johnson"}}
                 },
                 RowCount = 2
             };

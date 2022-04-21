@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Trainer.Models
 {
@@ -13,7 +9,6 @@ namespace Trainer.Models
     }
     public class Exercise : Entity
     {
-        //public int ExerciseID { get; set; }
         [Required]
         [Display(Name = "Exercise name")]
         public string Title { get; set; }

@@ -21,26 +21,26 @@ namespace Trainer.Core.Repository.TrainingRepo
 
         public async Task<PagedResult<Training>> GetPagedList(int page, int pageSize, string searchString = null, string sortOrder = null)
         {
-            IQueryable<Training> query = _context.Trainings.Include(s => s.Client)
+            IQueryable<Training> query = _context.Trainings.Include(t => t.Client)
                                           .Include(t => t.TrainingExercises)
-                                          .ThenInclude(i => i.Exercise);
+                                          .ThenInclude(te => te.Exercise);
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(i => i.Client.FirstName.Contains(searchString) ||
-                                         i.Client.LastName.Contains(searchString));
+                query = query.Where(t => t.Client.FirstName.Contains(searchString) ||
+                                         t.Client.LastName.Contains(searchString));
             }
 
             switch (sortOrder)
             {
                 case "date_asc":
-                    query = query.OrderBy(s => s.Date);
+                    query = query.OrderBy(t => t.Date);
                     break;
                 case "fullName_asc":
-                    query = query.OrderBy(s => s.Client.FullName);
+                    query = query.OrderBy(t => t.Client.FullName);
                     break;
                 default:
-                    query = query.OrderByDescending(s => s.Date);
+                    query = query.OrderByDescending(t => t.Date);
                     break;
             }
 
@@ -54,11 +54,11 @@ namespace Trainer.Core.Repository.TrainingRepo
 
         public override async Task<Training> GetById(int id)
         {
-            return await _context.Trainings.Include(s => s.Client)
+            return await _context.Trainings.Include(t => t.Client)
                                            .Include(t => t.TrainingExercises)
-                                           .ThenInclude(i => i.Exercise)
-                                           .Where(c => c.ID == id)
-                                           .OrderBy(v => v.Date)
+                                           .ThenInclude(te => te.Exercise)
+                                           .Where(t => t.ID == id)
+                                           .OrderBy(t => t.Date)
                                            .FirstOrDefaultAsync();
         }
 

@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
@@ -136,21 +134,21 @@ namespace Trainer.Services
             var exercises = await _exerciseRepository.GetPagedList(1, 100);
 
             model.Trainings = trainings.Results
-                                   .OrderByDescending(m => m.Date)
-                                   .Select(m => new SelectListItem
+                                   .OrderByDescending(t => t.Date)
+                                   .Select(t => new SelectListItem
                                    {
-                                       Text = m.Client.FullName.ToString() + " " + m.Date.ToShortDateString(),
-                                       Value = m.ID.ToString(),
-                                       Selected = model.TrainingID == m.ID
+                                       Text = t.Client.FullName.ToString() + " " + t.Date.ToShortDateString(),
+                                       Value = t.ID.ToString(),
+                                       Selected = model.TrainingID == t.ID
                                    })
                                   .ToList();
             model.Exercises = exercises.Results
-                                  .OrderBy(m => m.Title)
-                                  .Select(m => new SelectListItem
+                                  .OrderBy(e => e.Title)
+                                  .Select(e => new SelectListItem
                                   {
-                                      Text = m.Title,
-                                      Value = m.ID.ToString(),
-                                      Selected = model.ExerciseID == m.ID
+                                      Text = e.Title,
+                                      Value = e.ID.ToString(),
+                                      Selected = model.ExerciseID == e.ID
                                   })
                                  .ToList();
         }

@@ -10,13 +10,11 @@ namespace Trainer.Models.ViewModels
     {
         public int ID { get; set; }
         [DataType(DataType.Date)]
-        //[DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Training date")]
         public DateTime Date { get; set; }
         public int ClientID { get; set; }
         [Display(Name = "Client name")]
         public string ClientName { get; set; }
-        //public Client Client { get; set; }
 
         public ICollection<TrainingExercise> TrainingExercises { get; set; }
         public ICollection<Client> Clients { get; set; }

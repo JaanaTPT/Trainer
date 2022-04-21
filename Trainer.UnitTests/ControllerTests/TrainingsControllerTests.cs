@@ -2,8 +2,6 @@
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Trainer.Controllers;
 using Trainer.Data;
@@ -32,7 +30,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var page = 1;
             var trainings = GetPagedClientList();
-            _trainingServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
+            _trainingServiceMock.Setup(ts => ts.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => trainings);
 
             // Act
@@ -51,7 +49,7 @@ namespace Trainer.UnitTests.ControllerTests
             var defaultViewNames = new[] { null, "Index" };
             var page = 1;
             var trainings = GetPagedClientList();
-            _trainingServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", ""))
+            _trainingServiceMock.Setup(ts => ts.GetPagedList(page, It.IsAny<int>(), "", ""))
                                .ReturnsAsync(() => trainings);
 
             // Act
@@ -68,7 +66,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var page = 1;
             var trainings = GetPagedClientList();
-            _trainingServiceMock.Setup(cs => cs.GetPagedList(page, It.IsAny<int>(), "", "")).
+            _trainingServiceMock.Setup(ts => ts.GetPagedList(page, It.IsAny<int>(), "", "")).
                                ReturnsAsync(() => trainings);
 
             // Act
@@ -93,7 +91,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var nonExistentId = -1;
-            _trainingServiceMock.Setup(cs => cs.GetById(It.IsAny<int>()))
+            _trainingServiceMock.Setup(ts => ts.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => null);
 
             // Act
@@ -109,7 +107,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var model = GetTraining();
             var defaultViewNames = new[] { null, "Details" };
-            _trainingServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _trainingServiceMock.Setup(ts => ts.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => model);
 
             // Act
@@ -128,7 +126,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var training = GetTrainingEdit();
             var response = new OperationResponse();
-            _trainingServiceMock.Setup(ps => ps.Save(training))
+            _trainingServiceMock.Setup(ts => ts.Save(training))
                                .ReturnsAsync(() => response)
                                .Verifiable();
 
@@ -210,7 +208,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var trainingId = -100;
             var training = (TrainingModel)null;
-            _trainingServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _trainingServiceMock.Setup(ts => ts.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => training);
 
             // Act
@@ -226,7 +224,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var defaultViewNames = new[] { null, "Delete" };
             var training = GetTraining();
-            _trainingServiceMock.Setup(ps => ps.GetById(training.ID))
+            _trainingServiceMock.Setup(ts => ts.GetById(training.ID))
                                .ReturnsAsync(() => training);
 
             // Act
@@ -243,7 +241,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var nonExistentId = -1;
-            _trainingServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _trainingServiceMock.Setup(ts => ts.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => null);
 
             // Act
@@ -258,10 +256,10 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var training = GetTraining();
-            _trainingServiceMock.Setup(ps => ps.GetById(training.ID))
+            _trainingServiceMock.Setup(ts => ts.GetById(training.ID))
                                .ReturnsAsync(() => training)
                                .Verifiable();
-            _trainingServiceMock.Setup(ps => ps.Delete(training))
+            _trainingServiceMock.Setup(ts => ts.Delete(training))
                                .Verifiable();
 
             // Act

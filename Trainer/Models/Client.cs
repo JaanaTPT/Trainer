@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 namespace Trainer.Models
@@ -17,7 +15,6 @@ namespace Trainer.Models
         [Display(Name = "Last name")]
         public string LastName { get; set; }
         [DataType(DataType.Date)]
-        //[DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Birthday")]
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }

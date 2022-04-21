@@ -1,19 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Trainer.Core.IConfiguration;
-using Trainer.Data;
-using Trainer.Models;
 using Trainer.Models.ViewModels;
 using Trainer.Services;
 
 namespace Trainer.Controllers
 {
-    public class TrainingExercisesController : Controller
+    public class TrainingExercisesController : BaseController
     {
         private readonly ITrainingExerciseService _trainingExerciseService;
         private const int pagesize = 10;
@@ -69,8 +63,6 @@ namespace Trainer.Controllers
         }
 
         // POST: TrainingExercises/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TrainingExerciseEditModel trainingExercise)
@@ -89,13 +81,13 @@ namespace Trainer.Controllers
             }
 
             var response = await _trainingExerciseService.Save(trainingExercise);
-            //if (!response.Success)
-            //{
-            //    AddModelErrors(response);
-            //    await _trainingService.FillEditModel(training);
+            if (!response.Success)
+            {
+                AddModelErrors(response);
+                await _trainingExerciseService.FillEditModel(trainingExercise);
 
-            //    return View(training);
-            //}
+                return View(trainingExercise);
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -139,7 +131,6 @@ namespace Trainer.Controllers
             }
             catch (DbUpdateException /* ex */)
             {
-                //Log the error (uncomment ex variable name and write a log.)
                 ModelState.AddModelError("", "Unable to save changes. " +
                     "Try again, and if the problem persists, " +
                     "see your system administrator.");
@@ -192,7 +183,6 @@ namespace Trainer.Controllers
             }
             catch (DbUpdateException /* ex */)
             {
-                //Log the error (uncomment ex variable name and write a log.)
                 return RedirectToAction(nameof(Delete), new { id = id, saveChangesError = true });
             }
         }

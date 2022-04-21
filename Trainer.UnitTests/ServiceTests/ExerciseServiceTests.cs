@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
 using Trainer.Core.Repository.ExerciseRepo;
@@ -44,7 +40,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             int page = 1;
             int pageSize = 10;
-            _exerciseRepositoryMock.Setup(pr => pr.GetPagedList(page, pageSize, "", ""))
+            _exerciseRepositoryMock.Setup(er => er.GetPagedList(page, pageSize, "", ""))
                                   .ReturnsAsync(() => new PagedResult<Exercise>())
                                   .Verifiable();
 
@@ -63,7 +59,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var nonExistentId = -1;
             var nullExercise = (Exercise)null;
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+            _exerciseRepositoryMock.Setup(er => er.GetById(nonExistentId))
                                   .ReturnsAsync(() => nullExercise)
                                   .Verifiable();
 
@@ -81,7 +77,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var id = 1;
             var exercise = new Exercise { ID = id };
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                   .ReturnsAsync(() => exercise)
                                   .Verifiable();
 
@@ -100,7 +96,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var nonExistentId = -1;
             var nullExercise = (Exercise)null;
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+            _exerciseRepositoryMock.Setup(er => er.GetById(nonExistentId))
                                   .ReturnsAsync(() => nullExercise)
                                   .Verifiable();
 
@@ -118,7 +114,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var id = 1;
             var exercise = new Exercise { ID = id };
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                   .ReturnsAsync(() => exercise)
                                   .Verifiable();
 
@@ -152,7 +148,7 @@ namespace Trainer.UnitTests.ServiceTests
             var id = 1;
             var exercise = new ExerciseEditModel { ID = id };
             var nullExercise = (Exercise)null;
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                   .ReturnsAsync(() => nullExercise)
                                   .Verifiable();
 
@@ -172,10 +168,10 @@ namespace Trainer.UnitTests.ServiceTests
             var exercise = new Exercise { ID = id };
             var exerciseModel = new ExerciseEditModel { ID = id };
 
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                   .ReturnsAsync(() => exercise)
                                   .Verifiable();
-            _exerciseRepositoryMock.Setup(pr => pr.Save(It.IsAny<Exercise>()))
+            _exerciseRepositoryMock.Setup(er => er.Save(It.IsAny<Exercise>()))
                                   .Verifiable();
             _unitOfWorkMock.Setup(uow => uow.CommitAsync())
                            .Verifiable();
@@ -212,7 +208,7 @@ namespace Trainer.UnitTests.ServiceTests
             var exerciseModelToDelete = new ExerciseModel { ID = id };
             var exerciseToDelete = (Exercise)null;
 
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                   .ReturnsAsync(() => exerciseToDelete)
                                   .Verifiable();
 
@@ -233,10 +229,10 @@ namespace Trainer.UnitTests.ServiceTests
             var exerciseModelToDelete = new ExerciseModel { ID = id };
             var exerciseToDelete = new Exercise { ID = id };
 
-            _exerciseRepositoryMock.Setup(pr => pr.GetById(id))
+            _exerciseRepositoryMock.Setup(er => er.GetById(id))
                                   .ReturnsAsync(() => exerciseToDelete)
                                   .Verifiable();
-            _exerciseRepositoryMock.Setup(pr => pr.Delete(id))
+            _exerciseRepositoryMock.Setup(er => er.Delete(id))
                                   .Verifiable();
             _unitOfWorkMock.Setup(uow => uow.CommitAsync())
                            .Verifiable();

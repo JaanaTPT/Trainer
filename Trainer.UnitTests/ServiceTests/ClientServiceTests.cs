@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Trainer.Core.IConfiguration;
 using Trainer.Core.Repository.ClientRepo;
@@ -44,7 +40,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             int page = 1;
             int pageSize = 10;
-            _clientRepositoryMock.Setup(pr => pr.GetPagedList(page, pageSize, "", ""))
+            _clientRepositoryMock.Setup(cr => cr.GetPagedList(page, pageSize, "", ""))
                                   .ReturnsAsync(() => new PagedResult<Client>())
                                   .Verifiable();
 
@@ -63,7 +59,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var nonExistentId = -1;
             var nullClient = (Client)null;
-            _clientRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+            _clientRepositoryMock.Setup(cr => cr.GetById(nonExistentId))
                                   .ReturnsAsync(() => nullClient)
                                   .Verifiable();
 
@@ -81,7 +77,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var id = 1;
             var client = new Client { ID = id };
-            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+            _clientRepositoryMock.Setup(cr => cr.GetById(id))
                                   .ReturnsAsync(() => client)
                                   .Verifiable();
 
@@ -100,7 +96,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var nonExistentId = -1;
             var nullClient = (Client)null;
-            _clientRepositoryMock.Setup(pr => pr.GetById(nonExistentId))
+            _clientRepositoryMock.Setup(cr => cr.GetById(nonExistentId))
                                   .ReturnsAsync(() => nullClient)
                                   .Verifiable();
 
@@ -118,7 +114,7 @@ namespace Trainer.UnitTests.ServiceTests
             // Arrange
             var id = 1;
             var client = new Client { ID = id };
-            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+            _clientRepositoryMock.Setup(cr => cr.GetById(id))
                                   .ReturnsAsync(() => client)
                                   .Verifiable();
 
@@ -152,7 +148,7 @@ namespace Trainer.UnitTests.ServiceTests
             var id = 1;
             var client = new ClientEditModel { ID = id };
             var nullClient = (Client)null;
-            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+            _clientRepositoryMock.Setup(cr => cr.GetById(id))
                                   .ReturnsAsync(() => nullClient)
                                   .Verifiable();
 
@@ -172,10 +168,10 @@ namespace Trainer.UnitTests.ServiceTests
             var client = new Client { ID = id };
             var clientModel = new ClientEditModel { ID = id };
 
-            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+            _clientRepositoryMock.Setup(cr => cr.GetById(id))
                                   .ReturnsAsync(() => client)
                                   .Verifiable();
-            _clientRepositoryMock.Setup(pr => pr.Save(It.IsAny<Client>()))
+            _clientRepositoryMock.Setup(cr => cr.Save(It.IsAny<Client>()))
                                   .Verifiable();
             _unitOfWorkMock.Setup(uow => uow.CommitAsync())
                            .Verifiable();
@@ -212,7 +208,7 @@ namespace Trainer.UnitTests.ServiceTests
             var clientModelToDelete = new ClientModel { ID = id };
             var clientToDelete = (Client)null;
 
-            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+            _clientRepositoryMock.Setup(cr => cr.GetById(id))
                                   .ReturnsAsync(() => clientToDelete)
                                   .Verifiable();
 
@@ -233,10 +229,10 @@ namespace Trainer.UnitTests.ServiceTests
             var clientModelToDelete = new ClientModel { ID = id };
             var clientToDelete = new Client { ID = id };
 
-            _clientRepositoryMock.Setup(pr => pr.GetById(id))
+            _clientRepositoryMock.Setup(cr => cr.GetById(id))
                                   .ReturnsAsync(() => clientToDelete)
                                   .Verifiable();
-            _clientRepositoryMock.Setup(pr => pr.Delete(id))
+            _clientRepositoryMock.Setup(cr => cr.Delete(id))
                                   .Verifiable();
             _unitOfWorkMock.Setup(uow => uow.CommitAsync())
                            .Verifiable();

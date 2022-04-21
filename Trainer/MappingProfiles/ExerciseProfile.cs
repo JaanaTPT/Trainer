@@ -1,8 +1,4 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Trainer.Data;
 using Trainer.Models;
 using Trainer.Models.ViewModels;
@@ -18,8 +14,8 @@ namespace Trainer.MappingProfiles
             CreateMap<Exercise, ExerciseEditModel>();
 
             CreateMap<ExerciseEditModel, Exercise>()
-              .ForMember(m => m.ID, m => m.Ignore())
-              .ForMember(m => m.TrainingExercises, m => m.Ignore());
+              .ForMember(e => e.ID, e => e.Ignore())
+              .ForMember(e => e.TrainingExercises, e => e.Ignore());
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Trainer.Controllers;
-using Trainer.Services;
-using Trainer.Models;
-using Microsoft.AspNetCore.Mvc;
-using Xunit;
 using Trainer.Data;
+using Trainer.Models;
 using Trainer.Models.ViewModels;
+using Trainer.Services;
+using Xunit;
 
 namespace Trainer.UnitTests.ControllerTests
 {
@@ -106,7 +106,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var model = GetClient();
             var defaultViewNames = new[] { null, "Details" };
-            _clientServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _clientServiceMock.Setup(cs => cs.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => model);
 
             // Act
@@ -125,7 +125,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var client = GetClientEdit();
             var response = new OperationResponse();
-            _clientServiceMock.Setup(ps => ps.Save(client))
+            _clientServiceMock.Setup(cs => cs.Save(client))
                                .ReturnsAsync(() => response)
                                .Verifiable();
 
@@ -207,7 +207,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var clientId = -100;
             var client = (ClientModel)null;
-            _clientServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _clientServiceMock.Setup(cs => cs.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => client);
 
             // Act
@@ -223,7 +223,7 @@ namespace Trainer.UnitTests.ControllerTests
             // Arrange
             var defaultViewNames = new[] { null, "Delete" };
             var client = GetClient();
-            _clientServiceMock.Setup(ps => ps.GetById(client.ID))
+            _clientServiceMock.Setup(cs => cs.GetById(client.ID))
                                .ReturnsAsync(() => client);
 
             // Act
@@ -240,7 +240,7 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var nonExistentId = -1;
-            _clientServiceMock.Setup(ps => ps.GetById(It.IsAny<int>()))
+            _clientServiceMock.Setup(cs => cs.GetById(It.IsAny<int>()))
                                .ReturnsAsync(() => null);
 
             // Act
@@ -255,10 +255,10 @@ namespace Trainer.UnitTests.ControllerTests
         {
             // Arrange
             var client = GetClient();
-            _clientServiceMock.Setup(ps => ps.GetById(client.ID))
+            _clientServiceMock.Setup(cs => cs.GetById(client.ID))
                                .ReturnsAsync(() => client)
                                .Verifiable();
-            _clientServiceMock.Setup(ps => ps.Delete(client))
+            _clientServiceMock.Setup(cs => cs.Delete(client))
                                .Verifiable();
 
             // Act

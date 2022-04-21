@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -131,12 +130,12 @@ namespace Trainer.Services
             var clients = await _clientRepository.GetPagedList(1, 100);
 
             model.Clients = clients.Results
-                                   .OrderBy(m => m.FullName)
-                                   .Select(m => new SelectListItem
+                                   .OrderBy(c => c.FullName)
+                                   .Select(c => new SelectListItem
                                    {
-                                      Text = m.FullName,
-                                      Value = m.ID.ToString(),
-                                      Selected = model.ClientID == m.ID
+                                      Text = c.FullName,
+                                      Value = c.ID.ToString(),
+                                      Selected = model.ClientID == c.ID
                                    })
                                   .ToList();
         }

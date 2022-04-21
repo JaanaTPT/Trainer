@@ -11,7 +11,6 @@ namespace Trainer.Models.ViewModels
     {
         public int ID { get; set; }
         [DataType(DataType.Date)]
-        //[DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Training date")]
         public DateTime Date { get; set; }
         public int ClientID { get; set; }

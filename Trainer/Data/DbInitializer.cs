@@ -1,8 +1,6 @@
-﻿using Trainer.Models;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
+using Trainer.Models;
 
 namespace Trainer.Data
 {
@@ -13,10 +11,9 @@ namespace Trainer.Data
         {
             context.Database.EnsureCreated();
 
-            // Look for any students.
             if (context.Clients.Any())
             {
-                return;   // DB has been seeded
+                return;  
             }
 
             var clients = new Client[]
