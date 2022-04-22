@@ -16,7 +16,7 @@
     if (!string.IsNullOrEmpty(query))
     {
         query = query.Substring(1);
-        urlTemplate += query + "&";
+        urlTemplate += "?" + query + "&";
     }
     else
     {
