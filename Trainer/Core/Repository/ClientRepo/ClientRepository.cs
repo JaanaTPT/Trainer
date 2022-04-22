@@ -40,6 +40,9 @@ namespace Trainer.Core.Repository.ClientRepo
 
             switch (sortOrder)
             {
+                case "lastName_asc":
+                    query = query.OrderBy(c => c.LastName);
+                    break;
                 case "lastName_desc":
                     query = query.OrderByDescending(c => c.LastName);
                     break;

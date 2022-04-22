@@ -37,7 +37,10 @@ namespace Trainer.Core.Repository.TrainingRepo
                     query = query.OrderBy(t => t.Date);
                     break;
                 case "fullName_asc":
-                    query = query.OrderBy(t => t.Client.FullName);
+                    query = query.OrderBy(t => (t.Client.FirstName + " " + t.Client.LastName));
+                    break;
+                case "fullName_desc":
+                    query = query.OrderByDescending(t => (t.Client.FirstName + " " + t.Client.LastName));
                     break;
                 default:
                     query = query.OrderByDescending(t => t.Date);

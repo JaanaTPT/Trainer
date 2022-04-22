@@ -41,7 +41,7 @@ namespace Trainer.Core.Repository.ExerciseRepo
                 case "name_desc":
                     query = query.OrderByDescending(e => e.Title);
                     break;
-                case "Muscle":
+                case "muscle_asc":
                     query = query.OrderBy(e => e.MuscleGroup);
                     break;
                 case "muscle_desc":

@@ -26,16 +26,10 @@
         <thead>
             <tr>
                 <th>
-                    First Name
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">First name</a>
                 </th>
                 <th>
-                    Last Name
-                </th>
-                <th>
-                    Birthday
-                </th>
-                <th>
-                    Gender
+                    <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNameSortParm"]">Last name</a>
                 </th>
                 <th>
                     Start weight
@@ -61,12 +55,6 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.LastName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DateOfBirth)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Gender)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.StartWeight)

@@ -24,18 +24,12 @@
     <table class="table">
         <thead>
             <tr>
-                @*<th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]"> @Html.DisplayNameFor(model => model.Title)</a>
+                <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]"> Exercise name</a>
         </th>
         <th>
-            <a asp-action="Index" asp-route-sortOrder="@ViewData["MuscleSortParm"]">  @Html.DisplayNameFor(model => model.MuscleGroup)</a>
-        </th>*@
-                <th>
-                    Exercise
-                </th>
-                <th>
-                    Muscle Group
-                </th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewData["MuscleSortParm"]"> Muscle Group</a>
+        </th>
                 <th></th>
             </tr>
         </thead>

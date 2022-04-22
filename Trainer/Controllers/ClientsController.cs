@@ -20,8 +20,8 @@ namespace Trainer.Controllers
         // GET: Clients
         public async Task<IActionResult> Index(string sortOrder, string searchString, int page = 1)
         {
-            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "lastName_desc" : "";
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "firstName_desc" : "";
+            ViewData["LastNameSortParm"] = sortOrder == "lastName_asc" ? "lastName_desc" : "lastName_asc";
             ViewData["CurrentFilter"] = searchString;
 
             var model = await _clientService.GetPagedList(page, pagesize, searchString, sortOrder);
