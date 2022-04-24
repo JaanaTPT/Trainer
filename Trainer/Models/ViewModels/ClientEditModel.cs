@@ -19,6 +19,11 @@ namespace Trainer.Models.ViewModels
         [DataType(DataType.Date)]
         [Display(Name = "Birthday")]
         public DateTime DateOfBirth { get; set; }
+        [StringLength(20)]
+        public String Phone { get; set; }
+        [StringLength(50)]
+        [Display(Name = "E-mail")]
+        public String Email { get; set; }
         public string Gender { get; set; }
         [Display(Name = "Start weight")]
         public int StartWeight { get; set; }

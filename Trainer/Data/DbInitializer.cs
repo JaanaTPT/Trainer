@@ -18,15 +18,15 @@ namespace Trainer.Data
 
             var clients = new Client[]
             {
-            new Client{FirstName="Denise",LastName="Ellison",DateOfBirth=DateTime.Parse("2000-10-22"),Gender="F",StartWeight=67,CurrentWeight=65,Height=167,AdditionalInfo="Wants to lose weight and improve muscle tone."},
-            new Client{FirstName="Timothy",LastName="Herring",DateOfBirth=DateTime.Parse("1992-01-05"),Gender="M",StartWeight=110,CurrentWeight=97,Height=185,AdditionalInfo="Purpose is to lose fat and be in better shape. Pain in knees."},
-            new Client{FirstName="Josh",LastName="Goddard",DateOfBirth=DateTime.Parse("1986-12-10"),Gender="M",StartWeight=89,CurrentWeight=89,Height=189,AdditionalInfo="Wants to build muscle and lose belly fat."},
-            new Client{FirstName="Eric",LastName="Whitley",DateOfBirth=DateTime.Parse("1995-06-18"),Gender="M",StartWeight=96,CurrentWeight=90,Height=179,AdditionalInfo="Trains for marathon, wants to improve muscle structure."},
-            new Client{FirstName="Tallulah",LastName="Tanner",DateOfBirth=DateTime.Parse("1978-04-04"),Gender="F",StartWeight=79,CurrentWeight=71,Height=164,AdditionalInfo="Wants to lose baby weight. Abdomen diastasis."},
-            new Client{FirstName="Mae",LastName="Ventura",DateOfBirth=DateTime.Parse("2002-02-27"),Gender="F",StartWeight=63,CurrentWeight=59,Height=158,AdditionalInfo="Interested in body fitness, wants to build muscle and lose fat."},
-            new Client{FirstName="Rufus",LastName="Burke",DateOfBirth=DateTime.Parse("1982-06-30"),Gender="M",StartWeight=125,CurrentWeight=119,Height=192,AdditionalInfo="Wants to be in better shape, a lot of aerobic training besides muscle building."},
-            new Client{FirstName="Stephan",LastName="Nash",DateOfBirth=DateTime.Parse("1989-11-19"),Gender="M",StartWeight=75,CurrentWeight=80,Height=187,AdditionalInfo="Needs to build muscle and increase weight. Likes diversity in trainings."},
-            new Client{FirstName="Carly",LastName="Sinclair",DateOfBirth=DateTime.Parse("1998-01-02"),Gender="F",StartWeight=60,CurrentWeight=62,Height=176,AdditionalInfo="Wants to have nice muscles and have fun at training."}
+            new Client{FirstName="Denise",LastName="Ellison",DateOfBirth=DateTime.Parse("2000-10-22"),Phone ="5111223",Email = "denise.ellison@gmail.com",Gender="F",StartWeight=67,CurrentWeight=65,Height=167,AdditionalInfo="Wants to lose weight and improve muscle tone."},
+            new Client{FirstName="Timothy",LastName="Herring",DateOfBirth=DateTime.Parse("1992-01-05"), Phone ="5118965",Email = "tim.herring@gmail.com",Gender="M",StartWeight=110,CurrentWeight=97,Height=185,AdditionalInfo="Purpose is to lose fat and be in better shape. Pain in knees."},
+            new Client{FirstName="Josh",LastName="Goddard",DateOfBirth=DateTime.Parse("1986-12-10"),Phone ="5023874",Email = "jgoddard@gmail.com",Gender="M",StartWeight=89,CurrentWeight=89,Height=189,AdditionalInfo="Wants to build muscle and lose belly fat."},
+            new Client{FirstName="Eric",LastName="Whitley",DateOfBirth=DateTime.Parse("1995-06-18"),Phone ="56554770",Email = "eric.whitley@gmail.com",Gender="M",StartWeight=96,CurrentWeight=90,Height=179,AdditionalInfo="Trains for marathon, wants to improve muscle structure."},
+            new Client{FirstName="Tallulah",LastName="Tanner",DateOfBirth=DateTime.Parse("1978-04-04"),Phone ="52339650",Email = "taltanner@gmail.com",Gender="F",StartWeight=79,CurrentWeight=71,Height=164,AdditionalInfo="Wants to lose baby weight. Abdomen diastasis."},
+            new Client{FirstName="Mae",LastName="Ventura",DateOfBirth=DateTime.Parse("2002-02-27"),Phone ="50221559",Email = "mae.ventura@gmail.com",Gender="F",StartWeight=63,CurrentWeight=59,Height=158,AdditionalInfo="Interested in body fitness, wants to build muscle and lose fat."},
+            new Client{FirstName="Rufus",LastName="Burke",DateOfBirth=DateTime.Parse("1982-06-30"),Phone ="55114552",Email = "rufus999@gmail.com",Gender="M",StartWeight=125,CurrentWeight=119,Height=192,AdditionalInfo="Wants to be in better shape, a lot of aerobic training besides muscle building."},
+            new Client{FirstName="Stephan",LastName="Nash",DateOfBirth=DateTime.Parse("1989-11-19"),Phone ="50701490",Email = "stephen.nash@gmail.com",Gender="M",StartWeight=75,CurrentWeight=80,Height=187,AdditionalInfo="Needs to build muscle and increase weight. Likes diversity in trainings."},
+            new Client{FirstName="Carly",LastName="Sinclair",DateOfBirth=DateTime.Parse("1998-01-02"),Phone ="52993644",Email = "csinclair@gmail.com",Gender="F",StartWeight=60,CurrentWeight=62,Height=176,AdditionalInfo="Wants to have nice muscles and have fun at training."}
             };
             foreach (Client c in clients)
             {
