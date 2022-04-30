@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Trainer.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,9 +13,11 @@ namespace Trainer.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StartWeight = table.Column<int>(type: "int", nullable: false),
                     CurrentWeight = table.Column<int>(type: "int", nullable: false),
@@ -31,69 +33,81 @@ namespace Trainer.Migrations
                 name: "Exercise",
                 columns: table => new
                 {
-                    ExerciseID = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MuscleGroup = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Exercise", x => x.ExerciseID);
+                    table.PrimaryKey("PK_Exercise", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Training",
                 columns: table => new
                 {
-                    TrainingID = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClientID = table.Column<int>(type: "int", nullable: false)
+                    ClientID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Training", x => x.TrainingID);
+                    table.PrimaryKey("PK_Training", x => x.ID);
                     table.ForeignKey(
                         name: "FK_Training_Client_ClientID",
                         column: x => x.ClientID,
                         principalTable: "Client",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "TrainingExercise",
                 columns: table => new
                 {
-                    TrainingExerciseID = table.Column<int>(type: "int", nullable: false)
+                    ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TrainingID = table.Column<int>(type: "int", nullable: false),
-                    ExerciseID = table.Column<int>(type: "int", nullable: false),
                     Rounds = table.Column<int>(type: "int", nullable: false),
                     Repetitions = table.Column<int>(type: "int", nullable: false),
                     MaxWeight = table.Column<int>(type: "int", nullable: false),
-                    Comments = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Comments = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TrainingID = table.Column<int>(type: "int", nullable: true),
+                    ExerciseID = table.Column<int>(type: "int", nullable: true),
+                    ClientID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TrainingExercise", x => x.TrainingExerciseID);
+                    table.PrimaryKey("PK_TrainingExercise", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_TrainingExercise_Client_ClientID",
+                        column: x => x.ClientID,
+                        principalTable: "Client",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TrainingExercise_Exercise_ExerciseID",
                         column: x => x.ExerciseID,
                         principalTable: "Exercise",
-                        principalColumn: "ExerciseID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TrainingExercise_Training_TrainingID",
                         column: x => x.TrainingID,
                         principalTable: "Training",
-                        principalColumn: "TrainingID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Training_ClientID",
                 table: "Training",
+                column: "ClientID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrainingExercise_ClientID",
+                table: "TrainingExercise",
                 column: "ClientID");
 
             migrationBuilder.CreateIndex(

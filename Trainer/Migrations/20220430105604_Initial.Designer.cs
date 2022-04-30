@@ -10,8 +10,8 @@ using Trainer.Data;
 namespace Trainer.Migrations
 {
     [DbContext(typeof(TrainingContext))]
-    [Migration("20211009145824_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220430105604_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,8 +37,14 @@ namespace Trainer.Migrations
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
@@ -47,7 +53,13 @@ namespace Trainer.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("StartWeight")
                         .HasColumnType("int");
@@ -59,7 +71,7 @@ namespace Trainer.Migrations
 
             modelBuilder.Entity("Trainer.Models.Exercise", b =>
                 {
-                    b.Property<int>("ExerciseID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -68,27 +80,28 @@ namespace Trainer.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("ExerciseID");
+                    b.HasKey("ID");
 
                     b.ToTable("Exercise");
                 });
 
             modelBuilder.Entity("Trainer.Models.Training", b =>
                 {
-                    b.Property<int>("TrainingID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ClientID")
+                    b.Property<int?>("ClientID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("TrainingID");
+                    b.HasKey("ID");
 
                     b.HasIndex("ClientID");
 
@@ -97,15 +110,18 @@ namespace Trainer.Migrations
 
             modelBuilder.Entity("Trainer.Models.TrainingExercise", b =>
                 {
-                    b.Property<int>("TrainingExerciseID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("ClientID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Comments")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ExerciseID")
+                    b.Property<int?>("ExerciseID")
                         .HasColumnType("int");
 
                     b.Property<int>("MaxWeight")
@@ -117,10 +133,12 @@ namespace Trainer.Migrations
                     b.Property<int>("Rounds")
                         .HasColumnType("int");
 
-                    b.Property<int>("TrainingID")
+                    b.Property<int?>("TrainingID")
                         .HasColumnType("int");
 
-                    b.HasKey("TrainingExerciseID");
+                    b.HasKey("ID");
+
+                    b.HasIndex("ClientID");
 
                     b.HasIndex("ExerciseID");
 
@@ -133,26 +151,24 @@ namespace Trainer.Migrations
                 {
                     b.HasOne("Trainer.Models.Client", "Client")
                         .WithMany("Trainings")
-                        .HasForeignKey("ClientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientID");
 
                     b.Navigation("Client");
                 });
 
             modelBuilder.Entity("Trainer.Models.TrainingExercise", b =>
                 {
+                    b.HasOne("Trainer.Models.Client", null)
+                        .WithMany("TrainingExercises")
+                        .HasForeignKey("ClientID");
+
                     b.HasOne("Trainer.Models.Exercise", "Exercise")
                         .WithMany("TrainingExercises")
-                        .HasForeignKey("ExerciseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ExerciseID");
 
                     b.HasOne("Trainer.Models.Training", "Training")
                         .WithMany("TrainingExercises")
-                        .HasForeignKey("TrainingID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TrainingID");
 
                     b.Navigation("Exercise");
 
@@ -161,6 +177,8 @@ namespace Trainer.Migrations
 
             modelBuilder.Entity("Trainer.Models.Client", b =>
                 {
+                    b.Navigation("TrainingExercises");
+
                     b.Navigation("Trainings");
                 });
 

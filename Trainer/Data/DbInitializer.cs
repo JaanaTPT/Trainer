@@ -9,7 +9,6 @@ namespace Trainer.Data
 
         public static void Initialize(TrainingContext context)
         {
-            context.Database.EnsureCreated();
 
             if (context.Clients.Any())
             {
@@ -36,23 +35,23 @@ namespace Trainer.Data
 
             var trainings = new Training[]
              {
-            new Training{Date=DateTime.Parse("2021-08-02"),Client = clients[0]},
-            new Training{Date=DateTime.Parse("2021-09-10"),Client = clients[1]},
-            new Training{Date=DateTime.Parse("2021-08-19"),Client = clients[2]},
-            new Training{Date=DateTime.Parse("2021-09-10"),Client = clients[3]},
-            new Training{Date=DateTime.Parse("2021-08-14"),Client = clients[4]},
-            new Training{Date=DateTime.Parse("2021-08-19"),Client = clients[5]},
-            new Training{Date=DateTime.Parse("2021-08-29"),Client = clients[6]},
-            new Training{Date=DateTime.Parse("2021-08-19"),Client = clients[7]},
-            new Training{Date=DateTime.Parse("2021-08-29"),Client = clients[8]},
-            new Training{Date=DateTime.Parse("2021-08-29"),Client = clients[9]},
-            new Training{Date=DateTime.Parse("2021-08-02"),Client = clients[10]},
-            new Training{Date=DateTime.Parse("2021-08-19"),Client = clients[11]},
-            new Training{Date=DateTime.Parse("2021-08-02"),Client = clients[12]},
-            new Training{Date=DateTime.Parse("2021-08-14"),Client = clients[13]},
-            new Training{Date=DateTime.Parse("2021-08-19"),Client = clients[14]},
-            new Training{Date=DateTime.Parse("2021-08-02"),Client = clients[15]},
-            new Training{Date=DateTime.Parse("2021-08-14"),Client = clients[16]},
+            new Training{Date=DateTime.Parse("2022-03-02"),Client = clients[0]},
+            new Training{Date=DateTime.Parse("2022-04-10"),Client = clients[1]},
+            new Training{Date=DateTime.Parse("2022-03-19"),Client = clients[2]},
+            new Training{Date=DateTime.Parse("2022-04-10"),Client = clients[3]},
+            new Training{Date=DateTime.Parse("2022-03-14"),Client = clients[4]},
+            new Training{Date=DateTime.Parse("2022-03-19"),Client = clients[5]},
+            new Training{Date=DateTime.Parse("2022-03-29"),Client = clients[6]},
+            new Training{Date=DateTime.Parse("2022-03-19"),Client = clients[7]},
+            new Training{Date=DateTime.Parse("2022-03-29"),Client = clients[8]},
+            new Training{Date=DateTime.Parse("2022-03-29"),Client = clients[0]},
+            new Training{Date=DateTime.Parse("2022-03-02"),Client = clients[1]},
+            new Training{Date=DateTime.Parse("2022-03-19"),Client = clients[2]},
+            new Training{Date=DateTime.Parse("2022-03-02"),Client = clients[3]},
+            new Training{Date=DateTime.Parse("2022-03-14"),Client = clients[4]},
+            new Training{Date=DateTime.Parse("2022-03-19"),Client = clients[5]},
+            new Training{Date=DateTime.Parse("2022-03-02"),Client = clients[6]},
+            new Training{Date=DateTime.Parse("2022-03-14"),Client = clients[7]},
             };
             foreach (Training t in trainings)
             {
