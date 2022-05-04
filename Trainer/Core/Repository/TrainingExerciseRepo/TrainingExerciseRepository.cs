@@ -36,11 +36,20 @@ namespace Trainer.Core.Repository.TrainingExerciseRepo
 
             switch (sortOrder)
             {
+                case "clientName_asc":
+                    query = query.OrderBy(te => (te.Training.Client.FirstName + " " + te.Training.Client.LastName))
+                                 .ThenByDescending(te => te.Training.Date);
+                    break;
+                case "clientName_desc":
+                    query = query.OrderByDescending(te => (te.Training.Client.FirstName + " " + te.Training.Client.LastName))
+                                  .ThenByDescending(te => te.Training.Date);
+                    break;
                 case "date_asc":
                     query = query.OrderBy(te => te.Training.Date);
                     break;
                 default:
-                    query = query.OrderByDescending(te => te.Training.Date);
+                    query = query.OrderByDescending(te => te.Training.Date)
+                                 .ThenBy(te => (te.Training.Client.FirstName + " " + te.Training.Client.LastName));
                     break;
             }
 

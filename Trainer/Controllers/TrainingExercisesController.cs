@@ -20,6 +20,7 @@ namespace Trainer.Controllers
         public async Task<IActionResult> Index(string sortOrder, string searchString, int page = 1)
         {
             ViewData["DateSortParm"] = String.IsNullOrEmpty(sortOrder) ? "date_asc" : "";
+            ViewData["ClientNameSortParm"] = sortOrder == "clientName_asc" ? "clientName_desc" : "clientName_asc";
             ViewData["CurrentFilter"] = searchString;
 
             var model = await _trainingExerciseService.GetPagedList(page, pagesize, searchString, sortOrder);
